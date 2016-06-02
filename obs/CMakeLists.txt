@@ -31,14 +31,22 @@ endif()
 
 find_package(Qt5Widgets ${FIND_MODE})
 
-if(NOT Qt5Widgets_FOUND)
+# On mac, these are all located in /usr/local/opt/qt5/lib/cmake
+# These are all packages related to Chew Webview
+find_package(Qt5WebEngine ${FIND_MODE})
+find_package(Qt5WebEngineWidgets ${FIND_MODE})
+find_package(Qt5Network ${FIND_MODE})
+find_package(Qt5WebChannel ${FIND_MODE})
+
+if(NOT (Qt5Widgets_FOUND AND Qt5WebEngine_FOUND AND Qt5WebEngineWidgets_FOUND AND Qt5Network_FOUND AND Qt5WebChannel_FOUND))
 	if (ENABLE_UI)
-		message(FATAL_ERROR "Failed to find Qt5")
+		message(FATAL_ERROR "Qt5 not found, or some of its modules")
 	else()
-		message(STATUS "Qt5 not found - UI disabled")
+		message(STATUS "Qt5 not found, or some of its modules - UI disabled")
 		return()
 	endif()
 endif()
+
 
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/libobs")
 
@@ -134,7 +142,9 @@ set(obs_SOURCES
 	source-label.cpp
 	remote-text.cpp
 	audio-encoders.cpp
-	qt-wrappers.cpp)
+	qt-wrappers.cpp
+  chew/ChewWebDialog.cpp
+  chew/ChewHtmlProxy.cpp)
 
 set(obs_HEADERS
 	obs-app.hpp
@@ -177,7 +187,9 @@ set(obs_HEADERS
 	source-label.hpp
 	remote-text.hpp
 	audio-encoders.hpp
-	qt-wrappers.hpp)
+	qt-wrappers.hpp
+  chew/ChewWebDialog.h
+  chew/ChewHtmlProxy.h)
 
 set(obs_UI
 	forms/NameDialog.ui
@@ -189,7 +201,8 @@ set(obs_UI
 	forms/OBSBasicSettings.ui
 	forms/OBSBasicSourceSelect.ui
 	forms/OBSBasicInteraction.ui
-	forms/OBSRemux.ui)
+	forms/OBSRemux.ui
+  forms/ChewWebDialog.ui)
 
 set(obs_QRC
 	forms/obs.qrc)
@@ -219,6 +232,10 @@ target_link_libraries(obs
 	libobs
 	libff
 	Qt5::Widgets
+	Qt5::WebEngine
+	Qt5::WebEngineWidgets
+	Qt5::WebChannel
+	Qt5::Network
 	${LIBCURL_LIBRARIES}
 	${obs_PLATFORM_LIBRARIES})
 
