@@ -26,7 +26,7 @@ public:
   Q_PROPERTY(int versionBuild MEMBER versionBuild_ CONSTANT)
 
 signals:
-  void executeJs(const QString &method, const QString &params);
+  void executeJs(const QString &method, const QVariant &params);
 
 public slots:
   /** This slot is invoked from JS, executes the C++ implementation.
@@ -44,15 +44,7 @@ public slots:
    *  );
    *
    */
-  void executeString(const QString &method, const QString &params);
-
-  void executeVariant(const QString &method, const QVariant &params);
-
-  void executeJson(const QString &method, const QVariant &params);
-
   void execute(const QString &method, const QByteArray &params);
-
-  const QString& executeJsonStringifiedWithReturn(const QString &method, const QByteArray &params);
 };
 
 #endif // CHEWHTMLPROXY_H
