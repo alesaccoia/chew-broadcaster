@@ -835,9 +835,15 @@ bool OBSApp::OBSInit()
 					"LicenseAccepted", true);
 			config_save(globalConfig);
 		}
+    
+    mApplicationState = kChewStarted;
 
 		if (!StartupOBS(locale.c_str(), GetProfilerNameStore()))
 			return false;
+
+    chewWindow = new ChewWebDialog();
+    
+    QObject::connect(chewWindow->getChewHtmlProxy(), &ChewHTMLProxy::executeJs, this, &OBSApp::ChewWebViewHandler);
 
 		mainWindow = new OBSBasic();
 
@@ -858,6 +864,24 @@ bool OBSApp::OBSInit()
 	} else {
 		return false;
 	}
+}
+
+void OBSApp::ChewWebViewHandler(const QString &method, const QVariant &params) {
+  if (method == "authenticated") {
+    mainWindow->hide();
+    chewWindow->show();
+  } else if (method == "selectShow") {
+  
+  } else if (method == "editShow") {
+  
+  } else if (method == "logout") {
+  
+  } else if (method == "execute") {
+  
+  } else {
+    qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
+  }
+
 }
 
 string OBSApp::GetVersionString() const
@@ -1299,6 +1323,13 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 
 		prof.Stop();
 		PrintInitProfile();
+    
+    program.GetMainWindow()->hide();
+    program.GetChewWindow()->show();
+    
+    program.GetChewWindow()->setWindowTitle("Chew.tv login");
+    program.GetChewWindow()->navigateToUrl(QUrl("https://staging.chew.tv/_broadcaster"));
+    program.GetChewWindow()->show();
 
 		return program.exec();
 

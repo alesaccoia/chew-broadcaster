@@ -29,6 +29,8 @@
 #include <memory>
 #include <vector>
 
+
+#include "chew/ChewWebDialog.h"
 #include "window-main.hpp"
 
 std::string CurrentTimeString();
@@ -59,12 +61,20 @@ public:
 class OBSApp : public QApplication {
 	Q_OBJECT
 
+public:
+  enum {
+    kChewStarted,
+    kChewLoggedIn,
+    kChewShowSelected
+  } mApplicationState;
+
 private:
 	std::string                    locale;
 	std::string		       theme;
 	ConfigFile                     globalConfig;
 	TextLookup                     textLookup;
 	OBSContext                     obsContext;
+	QPointer<ChewWebDialog>        chewWindow;
 	QPointer<OBSMainWindow>        mainWindow;
 	profiler_name_store_t          *profilerNameStore = nullptr;
 
@@ -75,6 +85,8 @@ private:
 	bool InitGlobalConfigDefaults();
 	bool InitLocale();
 	bool InitTheme();
+  
+  void ChewWebViewHandler(const QString &method, const QVariant &params);
 
 public:
 	OBSApp(int &argc, char **argv, profiler_name_store_t *store);
@@ -84,6 +96,8 @@ public:
 	bool OBSInit();
 
 	inline QMainWindow *GetMainWindow() const {return mainWindow.data();}
+  
+	inline ChewWebDialog *GetChewWindow() const {return chewWindow.data();}
 
 	inline config_t *GlobalConfig() const {return globalConfig;}
 
@@ -131,6 +145,10 @@ public:
 		if (--sleepInhibitRefs == 0)
 			os_inhibit_sleep_set_active(sleepInhibitor, false);
 	}
+  
+    
+  
+  
 };
 
 int GetConfigPath(char *path, size_t size, const char *name);
