@@ -7,7 +7,7 @@ endif()
 
 set(CPACK_PACKAGE_NAME "CHEW")
 set(CPACK_PACKAGE_VENDOR "chew.tv")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Chew Studio - Chew.tv video and audio streaming software")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Chew Broadcaster - Chew.tv video and audio streaming software")
 
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
@@ -31,8 +31,8 @@ MESSAGE(STATUS "CHEW_VERSION: ${CHEW_VERSION}")
 
 if(INSTALLER_RUN)
 	set(CPACK_PACKAGE_EXECUTABLES
-		"chew32" "Chew Studio (32bit)"
-		"chew64" "Chew Studio (64bit)")
+		"chew32" "Chew Broadcaster (32bit)"
+		"chew64" "Chew Broadcaster (64bit)")
 	set(CPACK_CREATE_DESKTOP_LINKS
 		"chew32"
 		"chew64")
@@ -47,11 +47,11 @@ else()
 		set(_output_suffix "")
 	endif()
 
-	set(CPACK_PACKAGE_EXECUTABLES "chew${_output_suffix}" "Chew Studio")
+	set(CPACK_PACKAGE_EXECUTABLES "chew${_output_suffix}" "Chew Broadcaster")
 	set(CPACK_CREATE_DESKTOP_LINKS "chew${_output_suffix}")
 endif()
 
-set(CPACK_BUNDLE_NAME "OBS")
+set(CPACK_BUNDLE_NAME "Chew Broadcaster")
 set(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/cmake/osxbundle/Info.plist")
 set(CPACK_BUNDLE_ICON "${CMAKE_SOURCE_DIR}/cmake/osxbundle/obs.icns")
 set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/cmake/osxbundle/obslaunch.sh")
@@ -59,26 +59,26 @@ set(CPACK_BUNDLE_STARTUP_COMMAND "${CMAKE_SOURCE_DIR}/cmake/osxbundle/obslaunch.
 set(CPACK_WIX_TEMPLATE "${CMAKE_SOURCE_DIR}/cmake/Modules/WIX.template.in")
 
 if(INSTALLER_RUN)
-	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewStudio")
+	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewBroadcaster")
 	set(CPACK_WIX_UPGRADE_GUID "1f59ff79-2a3c-43c1-b2b2-033a5e6342eb")
 	set(CPACK_WIX_PRODUCT_GUID "0c7bec2a-4f07-41b2-9dff-d64b09c9c384")
-	set(CPACK_PACKAGE_FILE_NAME "chew-studio-${CHEW_VERSION}")
+	set(CPACK_PACKAGE_FILE_NAME "chew-broadcaster-${CHEW_VERSION}")
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	if(WIN32)
-		set(CPACK_PACKAGE_NAME "Chew Studio (64bit)")
+		set(CPACK_PACKAGE_NAME "Chew Broadcaster (64bit)")
 	endif()
-	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewStudio64")
+	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewBroadcaster64")
 	set(CPACK_WIX_UPGRADE_GUID "44c72510-2e8e-489c-8bc0-2011a9631b0b")
 	set(CPACK_WIX_PRODUCT_GUID "ca5bf4fe-7b38-4003-9455-de249d03caac")
-	set(CPACK_PACKAGE_FILE_NAME "chew-studio-x64-${CHEW_VERSION}")
+	set(CPACK_PACKAGE_FILE_NAME "chew-broadcaster-x64-${CHEW_VERSION}")
 else()
 	if(WIN32)
-		set(CPACK_PACKAGE_NAME "CHEW Studio (32bit)")
+		set(CPACK_PACKAGE_NAME "CHEW Broadcaster (32bit)")
 	endif()
-	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewStudio32")
+	set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "ChewBroadcaster32")
 	set(CPACK_WIX_UPGRADE_GUID "a26acea4-6190-4470-9fb9-f6d32f3ba030")
 	set(CPACK_WIX_PRODUCT_GUID "8e24982d-b0ab-4f66-9c90-f726f3b64682")
-	set(CPACK_PACKAGE_FILE_NAME "obs-studio-x86-${OBS_VERSION}")
+	set(CPACK_PACKAGE_FILE_NAME "obs-broadcaster-x86-${OBS_VERSION}")
 endif()
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
