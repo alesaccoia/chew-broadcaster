@@ -16,45 +16,19 @@ ChewHTMLProxy::ChewHTMLProxy(QObject *parent)
 
 }
 
-
-void ChewHTMLProxy::executeString(const QString &method, const QString &params) {
-  qDebug() << "executeString METHOD:" << method;
-  qDebug() << "QString PARAMS:" << params;
-}
-
-void ChewHTMLProxy::executeVariant(const QString &method, const QVariant &params) {
-  qDebug() << "executeVariant METHOD:" << method;
-  qDebug() << "VARIANT OBJ:" << params;
-}
-
-void ChewHTMLProxy::executeJson(const QString &method, const QVariant &params) {
-  qDebug() << "executeJson METHOD:" << method;
-  QJsonValue json;
-  json.fromVariant(params);
-  qDebug() << "QJSON PARAMS:" << json;
-}
-
 void ChewHTMLProxy::execute(const QString &method, const QByteArray &params) {
-  qDebug() << "executeJsonStringified METHOD:" << method;
   QJsonParseError err;
-  QJsonDocument jsonParam = QJsonDocument::fromJson(params, &err);
-
-  if (err.error == QJsonParseError::NoError) {
-    QJsonObject jsonObject = jsonParam.object();
-    QJsonValue testObj = jsonObject["username"];
-    qDebug() << testObj.toString();
-    for (auto jv: jsonObject) {
-      qDebug() << jv.type();
-    }
-  } else {
-    qDebug() << err.errorString();
+  QVariant jsonVariant= QJsonDocument::fromJson(params, &err).toVariant();
+  if (err.error != QJsonParseError::NoError) {
+    qDebug() << "There was an error with the Parsed JSON : " << err.errorString();
   }
-}
-
-
-const QString& ChewHTMLProxy::executeJsonStringifiedWithReturn(const QString &method, const QByteArray &params) {
-  QJsonObject object;
-  object.insert("isTrue", true);
-  QJsonDocument doc(object);
-  return "doc.toJson()";
+#ifdef CHEW_DEBUG_WEBVIEW
+  qDebug() << "Method:" << method
+  QVariantMap paramsMap = params.toMap();
+  QVariantMap::iterator i;
+  for (i = paramsMap.begin(); i != paramsMap.end(); ++i) {
+      qDebug() << i.key() << ": " << i.value().typeName();
+  }
+#endif
+  emit executeJs(method, jsonVariant);
 }

@@ -20,6 +20,8 @@ public:
 
   void navigateToUrl(QUrl url);
 
+  ChewHTMLProxy* getChewHtmlProxy();
+
 private:
   Ui::ChewWebDialog *ui;
   QWebEnginePage* mWebPage;

@@ -36,3 +36,8 @@ void ChewWebDialog::navigateToUrl(QUrl url) {
   mWebView->resize(this->size());
   update();
 }
+
+
+ChewHTMLProxy* ChewWebDialog::getChewHtmlProxy() {
+  return mProxy;
+}
