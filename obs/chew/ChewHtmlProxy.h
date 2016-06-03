@@ -14,6 +14,8 @@ private:
   static const int versionMajor_;
   static const int versionMinor_;
   static const int versionBuild_;
+  
+  static void printParamsRecursive(QVariant &params);
 
 public:
   explicit ChewHTMLProxy(QObject *parent = 0);
