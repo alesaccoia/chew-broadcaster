@@ -37,6 +37,10 @@ void ChewWebDialog::navigateToUrl(QUrl url) {
   update();
 }
 
+void ChewWebDialog::deleteCookies() {
+ mWebPage->profile()->cookieStore()->deleteAllCookies();
+}
+
 
 ChewHTMLProxy* ChewWebDialog::getChewHtmlProxy() {
   return mProxy;

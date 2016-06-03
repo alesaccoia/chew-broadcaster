@@ -19,6 +19,7 @@ public:
   ~ChewWebDialog();
 
   void navigateToUrl(QUrl url);
+  void deleteCookies();
 
   ChewHTMLProxy* getChewHtmlProxy();
 

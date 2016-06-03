@@ -24,11 +24,27 @@ void ChewHTMLProxy::execute(const QString &method, const QByteArray &params) {
   }
 #ifdef CHEW_DEBUG_WEBVIEW
   qDebug() << "Method:" << method
-  QVariantMap paramsMap = params.toMap();
-  QVariantMap::iterator i;
-  for (i = paramsMap.begin(); i != paramsMap.end(); ++i) {
-      qDebug() << i.key() << ": " << i.value().typeName();
-  }
+  printParamsRecursive(jsonVariant);
 #endif
   emit executeJs(method, jsonVariant);
+}
+
+void ChewHTMLProxy::printParamsRecursive(QVariant &params) {
+  if (params.canConvert<QVariantMap>()) {
+    QVariantMap::iterator i;
+    for (i = params.toMap().begin(); i != params.toMap().end(); ++i) {
+      qDebug() << i.key();
+      printParamsRecursive(i.value());
+    }
+  } else if (params.canConvert<QVariantList>()) {
+    QVariantList::iterator vli;
+    QVariantList vl = params.toList();
+    qDebug() << "[";
+    for (vli = vl.begin(); vli != vl.end(); ++vli) {
+      printParamsRecursive(*vli);
+    }
+    qDebug() << "]";
+  } else {
+    qDebug() << params.typeName();
+  }
 }
