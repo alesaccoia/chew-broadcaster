@@ -656,7 +656,7 @@ bool OBSApp::InitTheme()
 			"Theme");
 
 	if (!themeName)
-		themeName = "Default";
+		themeName = "Chew";
 
 	stringstream t;
 	t << themeName;
