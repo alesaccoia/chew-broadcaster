@@ -63,10 +63,12 @@ class OBSApp : public QApplication {
 
 public:
   enum {
-    kChewStarted,
+    kChewLoggedOut,
     kChewLoggedIn,
     kChewShowSelected
-  } mApplicationState;
+  } mChewConnectionState;
+  
+  Q_PROPERTY(QString stop_url MEMBER stop_url_)
 
 private:
 	std::string                    locale;
@@ -86,7 +88,11 @@ private:
 	bool InitLocale();
 	bool InitTheme();
   
+  // callback for anything that arrives from the webview
   void ChewWebViewHandler(const QString &method, const QVariant &params);
+  
+  QString stop_url_;
+  
 
 public:
 	OBSApp(int &argc, char **argv, profiler_name_store_t *store);
