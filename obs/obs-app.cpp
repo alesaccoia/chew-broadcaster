@@ -836,7 +836,7 @@ bool OBSApp::OBSInit()
 			config_save(globalConfig);
 		}
     
-    mApplicationState = kChewStarted;
+    mChewConnectionState = kChewLoggedOut;
 
 		if (!StartupOBS(locale.c_str(), GetProfilerNameStore()))
 			return false;
@@ -867,17 +867,37 @@ bool OBSApp::OBSInit()
 }
 
 void OBSApp::ChewWebViewHandler(const QString &method, const QVariant &params) {
+  QVariantMap paramsMap = params.toMap();
   if (method == "authenticated") {
+    QString userName;
+    if (!paramsMap.contains("username")) {
+      qDebug() << "Impossible to find parameter username in the paramteres for " << method;
+      userName = paramsMap.value("username").toString();
+      return;
+    }
+    mChewConnectionState = kChewLoggedIn;
     mainWindow->hide();
     chewWindow->show();
+    mainWindow->setWindowTitle("Chew.tv |" + userName);
   } else if (method == "selectShow") {
-  
+    chewWindow->hide();
   } else if (method == "editShow") {
-  
+    chewWindow->hide();
   } else if (method == "logout") {
-  
-  } else if (method == "execute") {
-  
+    // Hides the main window
+    // Deletes the cookied from the webview
+    // Show the login window
+    mainWindow->hide();
+    chewWindow->deleteCookies();
+  } else if (method == "open") {
+    // Opens a link in the default OS browser
+    QString url;
+    if (!paramsMap.contains("url")) {
+      qDebug() << "Impossible to find parameter url in the paramteres for " << method;
+      url = paramsMap.value("url").toString();
+      return;
+    }
+    QDesktopServices::openUrl(QUrl(url));
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
