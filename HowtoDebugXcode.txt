@@ -1,0 +1,31 @@
+The project’s structure is quite complex and it’s not meant made to be debugged directly in XCode using the CMake Xcode Generator.
+
+Still, it’s possible to use the IDE to aid the development, in the following way. Follow exactly this procedure: it will be possible to assign an executable to the target just after the project has been built.
+
+1) Configure the CMake project using the Makefile generator
+
+mkdir -p builds/mk 
+cd builds/mk
+CMAKE_PREFIX_PATH=/usr/local/opt/qt5/ cmake ../../
+
+2) Configure the CMake project using the Xcode Generator
+
+mkdir -p builds/xcode
+cd builds/xcode
+CMAKE_PREFIX_PATH=/usr/local/opt/qt5/ cmake ../../ -G Xcode
+
+
+2) Open the Xcode project, add a new Target, select Other -> External Build System
+Fill the first fields with anything, it doesn’t really matter.
+Build tool: /usr/bin/make
+Click next, and select the Xcode directory that has been created before
+
+3) A target will be created: in the External Tool Configuration, select the “mk” directory containing the Makefile
+
+4) Select the New Target, build it (CMD-B). It will take a bit and won’t give any output. Have some coffee. The target will be built in the folder mk/rundir/RelWithDebInfo/bin
+
+5) In the Targets (Upper Left Corner), Edit Scheme -> Run -> Executable. Select the executable that has been placed in mk/rundir/RelWithDebInfo/bin/obs. Also check the “Use custom working directory” option in the Options pane.
+
+That’s it! You can now set breakpoints, go to definitions and do all the endearing operations of a graphical debugger
+
+
