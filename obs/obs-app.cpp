@@ -851,6 +851,9 @@ bool OBSApp::OBSInit()
 		connect(mainWindow, SIGNAL(destroyed()), this, SLOT(quit()));
 
 		mainWindow->OBSInit();
+    
+//    setActiveWindow(chewWindow);
+//    mainWindow->hide();
 
 		connect(this, &QGuiApplication::applicationStateChanged,
 				[](Qt::ApplicationState state)
@@ -876,8 +879,8 @@ void OBSApp::ChewWebViewHandler(const QString &method, const QVariant &params) {
       return;
     }
     mChewConnectionState = kChewLoggedIn;
-    mainWindow->hide();
-    chewWindow->show();
+    chewWindow->hide();
+    mainWindow->show();
     mainWindow->setWindowTitle("Chew.tv |" + userName);
   } else if (method == "selectShow") {
     chewWindow->hide();
@@ -1344,12 +1347,11 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 		prof.Stop();
 		PrintInitProfile();
     
-    program.GetMainWindow()->hide();
+    program.GetChewWindow()->setWindowTitle("Chew.tv login");
+    program.GetChewWindow()->deleteCookies();
+    program.GetChewWindow()->navigateToUrl(QUrl("https://chew.tv/_broadcaster/"));
     program.GetChewWindow()->show();
     
-    program.GetChewWindow()->setWindowTitle("Chew.tv login");
-    program.GetChewWindow()->navigateToUrl(QUrl("https://staging.chew.tv/_broadcaster"));
-    program.GetChewWindow()->show();
 
 		return program.exec();
 
