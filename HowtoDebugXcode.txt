@@ -15,16 +15,16 @@ cd builds/xcode
 CMAKE_PREFIX_PATH=/usr/local/opt/qt5/ cmake ../../ -G Xcode
 
 
-2) Open the Xcode project, add a new Target, select Other -> External Build System
+3) Open the Xcode project, add a new Target, select Other -> External Build System
 Fill the first fields with anything, it doesn’t really matter.
 Build tool: /usr/bin/make
 Click next, and select the Xcode directory that has been created before
 
-3) A target will be created: in the External Tool Configuration, select the “mk” directory containing the Makefile
+4) A target will be created: in the External Tool Configuration, select the “mk” directory containing the Makefile
 
-4) Select the New Target, build it (CMD-B). It will take a bit and won’t give any output. Have some coffee. The target will be built in the folder mk/rundir/RelWithDebInfo/bin
+5) Select the New Target, build it (CMD-B). It will take a bit and won’t give any output. Have some coffee. The target will be built in the folder mk/rundir/RelWithDebInfo/bin
 
-5) In the Targets (Upper Left Corner), Edit Scheme -> Run -> Executable. Select the executable that has been placed in mk/rundir/RelWithDebInfo/bin/obs. Also check the “Use custom working directory” option in the Options pane.
+6) In the Targets (Upper Left Corner), Edit Scheme -> Run -> Executable. Select the executable that has been placed in mk/rundir/RelWithDebInfo/bin/obs. Also check the “Use custom working directory” option in the Options pane.
 
 That’s it! You can now set breakpoints, go to definitions and do all the endearing operations of a graphical debugger
 
