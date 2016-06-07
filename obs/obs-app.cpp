@@ -872,16 +872,7 @@ bool OBSApp::OBSInit()
 void OBSApp::ChewWebViewHandler(const QString &method, const QVariant &params) {
   QVariantMap paramsMap = params.toMap();
   if (method == "authenticated") {
-    QString userName;
-    if (!paramsMap.contains("username")) {
-      qDebug() << "Impossible to find parameter username in the paramteres for " << method;
-      userName = paramsMap.value("username").toString();
-      return;
-    }
-    mChewConnectionState = kChewLoggedIn;
-    chewWindow->hide();
-    mainWindow->show();
-    mainWindow->setWindowTitle("Chew.tv |" + userName);
+    ChewAuthenticationHandler(params);
   } else if (method == "selectShow") {
     chewWindow->hide();
   } else if (method == "editShow") {
@@ -904,6 +895,48 @@ void OBSApp::ChewWebViewHandler(const QString &method, const QVariant &params) {
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
+
+}
+
+void OBSApp::ChewAuthenticationHandler(const QVariant &params) {
+  if (!params.canConvert<QVariantMap>()) {
+    qDebug() << "JSON for authentication malformed? Impossible to convert to QVariantMap";
+    return;
+  }
+  QVariantMap paramsAsMap = params.toMap();
+  if (!paramsAsMap.contains("user")) {
+    qDebug() << "Impossible to find user object in the authentication parameters";
+    return;
+  }
+  QVariant userVal = paramsAsMap.value("user");
+  if (!userVal.canConvert<QVariantMap>()) {
+    qDebug() << "JSON for authentication malformed? Impossible to convert user object to QVariantMap";
+    return;
+  }
+  QVariantMap userMap = userVal.toMap();
+  if (!userMap.contains("name")) {
+    qDebug() << "Impossible to find parameter name in the authentication parameters";
+    return;
+  }
+  QVariant userNameVar = userMap.value("name");
+  QString userName = userNameVar.toString();
+  qDebug() << "Logged in as " << userName;
+  
+  mChewConnectionState = kChewLoggedIn;
+  chewWindow->hide();
+  mainWindow->show();
+  mainWindow->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
+}
+
+void OBSApp::ChewShowSelectionHandler(const QVariant &params) {
+
+}
+
+void OBSApp::ChewOpenLinkHandler(const QVariant &params) {
+
+}
+
+void OBSApp::ChewLogoutHandler() {
 
 }
 
@@ -1347,8 +1380,7 @@ static int run_program(fstream &logFile, int argc, char *argv[])
 		prof.Stop();
 		PrintInitProfile();
     
-    program.GetChewWindow()->setWindowTitle("Chew.tv login");
-    program.GetChewWindow()->deleteCookies();
+    program.GetChewWindow()->setWindowTitle("Chew.tv");
     program.GetChewWindow()->navigateToUrl(QUrl("https://chew.tv/_broadcaster/"));
     program.GetChewWindow()->show();
     

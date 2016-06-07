@@ -91,6 +91,11 @@ private:
   // callback for anything that arrives from the webview
   void ChewWebViewHandler(const QString &method, const QVariant &params);
   
+  void ChewAuthenticationHandler(const QVariant &params);
+  void ChewShowSelectionHandler(const QVariant &params);
+  void ChewOpenLinkHandler(const QVariant &params);
+  void ChewLogoutHandler();
+  
   QString stop_url_;
   
 

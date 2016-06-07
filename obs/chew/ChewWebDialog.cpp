@@ -20,7 +20,7 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebPage->setWebChannel(mWebChannel);
   mWebView->setPage(mWebPage);
 
-  //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+  this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
   mWebChannel->registerObject(QStringLiteral("app"), mProxy);
   

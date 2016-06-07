@@ -16,7 +16,7 @@ CMAKE_PREFIX_PATH=/usr/local/opt/qt5/ cmake ../../ -G Xcode
 
 
 3) Open the Xcode project, add a new Target, select Other -> External Build System
-Fill the first fields with anything, it doesn’t really matter.
+Fill the first fields with anything, like “obs xcode build” it doesn’t really matter. 
 Build tool: /usr/bin/make
 Click next, and select the Xcode directory that has been created before
 
@@ -25,6 +25,8 @@ Click next, and select the Xcode directory that has been created before
 5) Select the New Target, build it (CMD-B). It will take a bit and won’t give any output. Have some coffee. The target will be built in the folder mk/rundir/RelWithDebInfo/bin
 
 6) In the Targets (Upper Left Corner), Edit Scheme -> Run -> Executable. Select the executable that has been placed in mk/rundir/RelWithDebInfo/bin/obs. Also check the “Use custom working directory” option in the Options pane.
+
+7) Since the CMake output won’t be visible, and eventual build error won’t be displayed properly, it makes sense to add the “obs” target as dependency for “obs xcode build”. This will double the compilation time but will display errors in the code directly.
 
 That’s it! You can now set breakpoints, go to definitions and do all the endearing operations of a graphical debugger
 
