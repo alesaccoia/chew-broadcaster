@@ -23,12 +23,32 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
   mWebChannel->registerObject(QStringLiteral("app"), mProxy);
+  
+  setupShortcuts();
 }
 
 ChewWebDialog::~ChewWebDialog()
 {
   delete ui;
 }
+
+void ChewWebDialog::setupShortcuts() {
+// #if defined (Q_OS_MAC)
+  QAction *shrtCut = mWebView->pageAction(QWebEnginePage::Cut);
+  shrtCut->setShortcut(QKeySequence::Cut);
+  addAction(shrtCut);
+  QAction *shrtCopy = mWebView->pageAction(QWebEnginePage::Copy);;
+  shrtCopy->setShortcut(QKeySequence::Copy);
+  addAction(shrtCopy);
+  QAction *shrtPaste = mWebView->pageAction(QWebEnginePage::Paste);
+  shrtPaste->setShortcut(QKeySequence::Paste);
+  addAction(shrtPaste);
+  QAction *slctAll = mWebView->pageAction(QWebEnginePage::SelectAll);
+  slctAll->setShortcut(QKeySequence::SelectAll);
+  addAction(slctAll);
+// #endif
+}
+
 
 void ChewWebDialog::navigateToUrl(QUrl url) {
   mWebPage->load(url);
@@ -45,3 +65,4 @@ void ChewWebDialog::deleteCookies() {
 ChewHTMLProxy* ChewWebDialog::getChewHtmlProxy() {
   return mProxy;
 }
+
