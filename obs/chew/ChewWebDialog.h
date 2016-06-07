@@ -24,6 +24,10 @@ public:
   ChewHTMLProxy* getChewHtmlProxy();
 
 private:
+
+  // the webview doesn't listen to shortcuts "as is"
+  void setupShortcuts();
+
   Ui::ChewWebDialog *ui;
   QWebEnginePage* mWebPage;
   QWebEngineView* mWebView;

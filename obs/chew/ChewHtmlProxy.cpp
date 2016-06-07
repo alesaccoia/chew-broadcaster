@@ -29,8 +29,9 @@ void ChewHTMLProxy::execute(const QString &method, const QByteArray &params) {
 
 void ChewHTMLProxy::printParamsRecursive(QVariant &params) {
   if (params.canConvert<QVariantMap>()) {
+    QVariantMap paramsAsMap = params.toMap();
     QVariantMap::iterator i;
-    for (i = params.toMap().begin(); i != params.toMap().end(); ++i) {
+    for (i = paramsAsMap.begin(); i != paramsAsMap.end(); ++i) {
       qDebug() << i.key();
       printParamsRecursive(i.value());
     }
