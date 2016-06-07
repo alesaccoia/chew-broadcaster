@@ -1065,9 +1065,9 @@ void OBSBasic::OBSInit()
 
 	connect(ui->preview, &OBSQTDisplay::DisplayCreated, addDisplay);
 
-#ifdef _WIN32
-	show();
-#endif
+//#ifdef _WIN32
+//	show();
+//#endif
 
 	bool alwaysOnTop = config_get_bool(App()->GlobalConfig(), "BasicWindow",
 			"AlwaysOnTop");
@@ -1076,9 +1076,9 @@ void OBSBasic::OBSInit()
 		ui->actionAlwaysOnTop->setChecked(true);
 	}
 
-#ifndef _WIN32
-	show();
-#endif
+//#ifndef _WIN32
+//	show();
+//#endif
 
 	QList<int> defSizes;
 
