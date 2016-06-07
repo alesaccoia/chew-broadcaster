@@ -116,6 +116,8 @@ OBSBasic::OBSBasic(QWidget *parent)
 {
 	ui->setupUi(this);
 	ui->previewDisabledLabel->setVisible(false);
+  
+  ui->streamButton->setEnabled(false);
 
 	copyActionsDynamicProperties();
 
@@ -1075,6 +1077,16 @@ void OBSBasic::OBSInit()
 		SetAlwaysOnTop(this, true);
 		ui->actionAlwaysOnTop->setChecked(true);
 	}
+  
+  
+  chewWindow = new ChewWebDialog();
+
+  chewWindow->setWindowTitle("Chew.tv");
+  chewWindow->navigateToUrl(QUrl("https://chew.tv/_broadcaster/"));
+  chewWindow->show();
+  
+  QObject::connect(chewWindow->getChewHtmlProxy(), &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
+
 
 //#ifndef _WIN32
 //	show();
@@ -1098,6 +1110,77 @@ void OBSBasic::OBSInit()
 	}
 
 	ui->mainSplitter->setSizes(defSizes);
+}
+
+void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params) {
+  QVariantMap paramsMap = params.toMap();
+  if (method == "authenticated") {
+    ChewAuthenticationHandler(params);
+  } else if (method == "selectShow") {
+    chewWindow->hide();
+  } else if (method == "editShow") {
+    chewWindow->hide();
+  } else if (method == "logout") {
+    // Hides the main window
+    // Deletes the cookied from the webview
+    // Show the login window
+    this->hide();
+    chewWindow->deleteCookies();
+  } else if (method == "open") {
+    // Opens a link in the default OS browser
+    QString url;
+    if (!paramsMap.contains("url")) {
+      qDebug() << "Impossible to find parameter url in the paramteres for " << method;
+      url = paramsMap.value("url").toString();
+      return;
+    }
+    QDesktopServices::openUrl(QUrl(url));
+  } else {
+    qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
+  }
+
+}
+
+void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
+  if (!params.canConvert<QVariantMap>()) {
+    qDebug() << "JSON for authentication malformed? Impossible to convert to QVariantMap";
+    return;
+  }
+  QVariantMap paramsAsMap = params.toMap();
+  if (!paramsAsMap.contains("user")) {
+    qDebug() << "Impossible to find user object in the authentication parameters";
+    return;
+  }
+  QVariant userVal = paramsAsMap.value("user");
+  if (!userVal.canConvert<QVariantMap>()) {
+    qDebug() << "JSON for authentication malformed? Impossible to convert user object to QVariantMap";
+    return;
+  }
+  QVariantMap userMap = userVal.toMap();
+  if (!userMap.contains("name")) {
+    qDebug() << "Impossible to find parameter name in the authentication parameters";
+    return;
+  }
+  QVariant userNameVar = userMap.value("name");
+  QString userName = userNameVar.toString();
+  qDebug() << "Logged in as " << userName;
+  
+  mChewConnectionState = kChewLoggedIn;
+  chewWindow->hide();
+  this->show();
+  this->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
+}
+
+void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
+
+}
+
+void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
+
+}
+
+void OBSBasic::ChewLogoutHandler() {
+
 }
 
 void OBSBasic::InitHotkeys()
@@ -4112,4 +4195,10 @@ int OBSBasic::GetProfilePath(char *path, size_t size, const char *file) const
 		return snprintf(path, size, "%s/%s", profiles_path, profile);
 
 	return snprintf(path, size, "%s/%s/%s", profiles_path, profile, file);
+}
+
+
+void OBSBasic::ChewShowChosen() {
+  ui->streamButton->setEnabled(false);
+  qDebug() << "Chew show chosen";
 }
