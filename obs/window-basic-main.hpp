@@ -33,6 +33,8 @@
 #include <util/threading.h>
 #include <util/util.hpp>
 
+#include "chew/ChewWebDialog.h"
+
 #include <QPointer>
 
 class QListWidgetItem;
@@ -90,6 +92,14 @@ class OBSBasic : public OBSMainWindow {
 	};
 
 private:
+  enum {
+    kChewLoggedOut,
+    kChewLoggedIn,
+    kChewShowSelected
+  } mChewConnectionState;
+  
+	QPointer<ChewWebDialog>        chewWindow;
+
 	std::vector<VolControl*> volumes;
 
 	std::vector<OBSSignal> signalHandlers;
@@ -279,6 +289,18 @@ private:
 	{
 		return os_atomic_load_bool(&previewProgramMode);
 	}
+  
+  // Chew.tv extras
+  
+	inline ChewWebDialog *GetChewWindow() const {return chewWindow.data();}
+    
+  // callback for anything that arrives from the webview
+  void ChewWebViewHandler(const QString &method, const QVariant &params);
+  
+  void ChewAuthenticationHandler(const QVariant &params);
+  void ChewShowSelectionHandler(const QVariant &params);
+  void ChewOpenLinkHandler(const QVariant &params);
+  void ChewLogoutHandler();
 
 public slots:
 	void StartStreaming();
@@ -299,6 +321,8 @@ public slots:
 
 	void SaveProjectDeferred();
 	void SaveProject();
+  
+  void ChewShowChosen();
 
 private slots:
 	void AddSceneItem(OBSSceneItem item);
