@@ -22,12 +22,10 @@ void ChewHTMLProxy::execute(const QString &method, const QByteArray &params) {
   if (err.error != QJsonParseError::NoError) {
     qDebug() << "There was an error with the Parsed JSON : " << err.errorString();
   }
-//  qDebug() << "Method:" << method
-  printParamsRecursive(jsonVariant);
   emit executeJs(method, jsonVariant);
 }
 
-void ChewHTMLProxy::printParamsRecursive(QVariant &params) {
+void ChewHTMLProxy::printParamsRecursive(const QVariant &params) {
   if (params.canConvert<QVariantMap>()) {
     QVariantMap paramsAsMap = params.toMap();
     QVariantMap::iterator i;
@@ -44,6 +42,6 @@ void ChewHTMLProxy::printParamsRecursive(QVariant &params) {
     }
     qDebug() << "]";
   } else {
-    qDebug() << params.typeName();
+    qDebug() << "(" << params.typeName() << ")" << params;
   }
 }

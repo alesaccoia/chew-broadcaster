@@ -301,6 +301,9 @@ private:
   void ChewShowSelectionHandler(const QVariant &params);
   void ChewOpenLinkHandler(const QVariant &params);
   void ChewLogoutHandler();
+private slots:
+  void on_logoutButton_clicked();
+  void on_selectShowButton_clicked();
 
 public slots:
 	void StartStreaming();
