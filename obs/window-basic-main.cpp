@@ -52,6 +52,8 @@
 
 #include "obs-properties.h"
 
+#include "chew/ChewUtilities.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -2602,7 +2604,10 @@ void OBSBasic::ClearSceneData()
 
 void OBSBasic::closeEvent(QCloseEvent *event)
 {
-	if (outputHandler && outputHandler->Active()) {
+
+  bool wasStreamActive = (outputHandler && outputHandler->Active());
+
+	if (wasStreamActive) {
 		QMessageBox::StandardButton button = QMessageBox::question(
 				this, QTStr("ConfirmExit.Title"),
 				QTStr("ConfirmExit.Text"));
@@ -2616,6 +2621,13 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 	QWidget::closeEvent(event);
 	if (!event->isAccepted())
 		return;
+  
+  if (wasStreamActive) {
+    chew::SynchronousRequestWithTimeout req(QUrl(mChewStopUrl), 5000);
+    if (!req.run()) {
+      qDebug() << "Problem sending the stop_url to the server while shutting down";
+    }
+  }
 
 	if (updateCheckThread)
 		updateCheckThread->wait();
@@ -2631,6 +2643,7 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 	 * sources, etc) so that all references are released before shutdown */
 	ClearSceneData();
 }
+
 
 void OBSBasic::changeEvent(QEvent *event)
 {

@@ -144,7 +144,8 @@ set(obs_SOURCES
 	audio-encoders.cpp
 	qt-wrappers.cpp
   chew/ChewWebDialog.cpp
-  chew/ChewHtmlProxy.cpp)
+  chew/ChewHtmlProxy.cpp
+  chew/ChewUtilities.cpp)
 
 set(obs_HEADERS
 	obs-app.hpp
@@ -189,7 +190,8 @@ set(obs_HEADERS
 	audio-encoders.hpp
 	qt-wrappers.hpp
   chew/ChewWebDialog.h
-  chew/ChewHtmlProxy.h)
+  chew/ChewHtmlProxy.h
+  chew/ChewUtilities.h)
 
 set(obs_UI
 	forms/NameDialog.ui
