@@ -50,6 +50,8 @@
 
 #include "ui_OBSBasic.h"
 
+#include "obs-properties.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -1082,7 +1084,6 @@ void OBSBasic::OBSInit()
 		ui->actionAlwaysOnTop->setChecked(true);
 	}
   
-  
   chewWindow = new ChewWebDialog();
 
   chewWindow->setWindowTitle("Chew.tv");
@@ -1152,12 +1153,39 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
 }
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
-  ChewHTMLProxy::printParamsRecursive(params);
+  QVariantMap paramsAsMap;
+  QVariant tempVar, stream_url_var, stream_key_var, name_var;
+  
+  chew_check_and_convert_variant_map(params, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, tempVar, "show");
+  chew_check_and_convert_variant_map(tempVar, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, stream_url_var, "stream_url");
+  chew_check_and_return_variant(paramsAsMap, stream_key_var, "stream_key");
+  chew_check_and_return_variant(paramsAsMap, name_var, "name");
+  
+  QString stream_url = stream_url_var.toString();
+  QString stream_key = stream_key_var.toString();
+  QString show_title = name_var.toString();
+  
+  // create the custom settings for our two fields
+  obs_data_t* settings = obs_data_create();
+  obs_data_set_string(settings, "server", QT_TO_UTF8(stream_url));
+  obs_data_set_string(settings, "key", QT_TO_UTF8(stream_key));
+  
+  obs_service_t *newService = obs_service_create(
+        QT_TO_UTF8(QString("rtmp_custom"))
+			, "chew"
+      , settings
+			, nullptr);
+
+	SetService(newService);
+	SaveService();
+	obs_service_release(newService);
+  
+  this->setWindowTitle("Chew Broadcaster | " + show_title);
+  this->ui->streamButton->setEnabled(true);
   chewWindow->hide();
   chewWindow->clearContent();
-  this->ui->streamButton->setEnabled(true);
-  
-   // TODO: parse and set all parameters
 }
 
 void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
