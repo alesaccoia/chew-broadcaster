@@ -1153,21 +1153,24 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
 }
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
-  QVariantMap paramsAsMap;
+  QVariantMap paramsAsMap, streamMap;
   QVariant tempVar, stream_url_var, stream_key_var, name_var, stop_url_var;
   
   chew_check_and_convert_variant_map(params, paramsAsMap);
   chew_check_and_return_variant(paramsAsMap, tempVar, "show");
-  chew_check_and_convert_variant_map(tempVar, paramsAsMap);
-  chew_check_and_return_variant(paramsAsMap, stream_url_var, "stream_url");
-  chew_check_and_return_variant(paramsAsMap, stream_key_var, "stream_key");
-  chew_check_and_return_variant(paramsAsMap, name_var, "name");
+  chew_check_and_convert_variant_map(tempVar, streamMap);
+  chew_check_and_return_variant(streamMap, stream_url_var, "stream_url");
+  chew_check_and_return_variant(streamMap, stream_key_var, "stream_key");
+  chew_check_and_return_variant(streamMap, name_var, "name");
   chew_check_and_return_variant(paramsAsMap, stop_url_var, "stop_url");
   
   QString stream_url = stream_url_var.toString();
   QString stream_key = stream_key_var.toString();
   QString show_title = name_var.toString();
+  
   mChewStopUrl = stop_url_var.toString();
+  
+  qDebug() << mChewStopUrl;
   
   // create the custom settings for our two fields
   obs_data_t* settings = obs_data_create();
@@ -3667,10 +3670,7 @@ void OBSBasic::on_streamButton_clicked()
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     QNetworkReply *reply = manager->get(request);
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(GetForStoppingNetworkError(QNetworkReply::NetworkError)));
-
-    connect(reply, SIGNAL(finished()),
-            this, SLOT(GetForStoppingFinishedOk()));
+            this, SLOT(NetworkErrorOnStopStreaming(QNetworkReply::NetworkError)));
     
     StopStreaming();
 
@@ -3694,14 +3694,13 @@ void OBSBasic::on_streamButton_clicked()
 	}
 }
 
-void OBSBasic::GetForStoppingNetworkError(QNetworkReply::NetworkError code) {
+void OBSBasic::NetworkErrorOnStopStreaming(QNetworkReply::NetworkError code) {
   QMessageBox msgBox;
-  msgBox.setText(&"Error notifying the Chew server for the show termination, Error " [ code]);
+  std::stringstream ss;
+  ss << "Error notifying the Chew server for the show termination, Error ";
+  ss << code;
+  msgBox.setText(ss.str().c_str());
   msgBox.exec();
-}
-
-void OBSBasic::GetForStoppingFinishedOk() {
-  qDebug() << "GET to Chew Server executed successfully";
 }
 
 void OBSBasic::on_recordButton_clicked()
