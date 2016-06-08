@@ -56,6 +56,10 @@
 #include <QScreen>
 #include <QWindow>
 
+#define CHEW_TV_LOGIN "https://chew.tv/_broadcaster/"
+#define CHEW_TV_SELECT_SHOW "https://chew.tv/_broadcaster/shows"
+
+
 using namespace std;
 
 namespace {
@@ -1082,7 +1086,7 @@ void OBSBasic::OBSInit()
   chewWindow = new ChewWebDialog();
 
   chewWindow->setWindowTitle("Chew.tv");
-  chewWindow->navigateToUrl(QUrl("https://chew.tv/_broadcaster/"));
+  chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
   
   QObject::connect(chewWindow->getChewHtmlProxy(), &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
@@ -1117,24 +1121,11 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
   if (method == "authenticated") {
     ChewAuthenticationHandler(params);
   } else if (method == "selectShow") {
-    chewWindow->hide();
+    ChewShowSelectionHandler(params);
   } else if (method == "editShow") {
     chewWindow->hide();
-  } else if (method == "logout") {
-    // Hides the main window
-    // Deletes the cookied from the webview
-    // Show the login window
-    this->hide();
-    chewWindow->deleteCookies();
   } else if (method == "open") {
-    // Opens a link in the default OS browser
-    QString url;
-    if (!paramsMap.contains("url")) {
-      qDebug() << "Impossible to find parameter url in the paramteres for " << method;
-      url = paramsMap.value("url").toString();
-      return;
-    }
-    QDesktopServices::openUrl(QUrl(url));
+    ChewOpenLinkHandler(params);
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
@@ -1142,41 +1133,41 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
 }
 
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
-  if (!params.canConvert<QVariantMap>()) {
-    qDebug() << "JSON for authentication malformed? Impossible to convert to QVariantMap";
-    return;
-  }
-  QVariantMap paramsAsMap = params.toMap();
-  if (!paramsAsMap.contains("user")) {
-    qDebug() << "Impossible to find user object in the authentication parameters";
-    return;
-  }
-  QVariant userVal = paramsAsMap.value("user");
-  if (!userVal.canConvert<QVariantMap>()) {
-    qDebug() << "JSON for authentication malformed? Impossible to convert user object to QVariantMap";
-    return;
-  }
-  QVariantMap userMap = userVal.toMap();
-  if (!userMap.contains("name")) {
-    qDebug() << "Impossible to find parameter name in the authentication parameters";
-    return;
-  }
-  QVariant userNameVar = userMap.value("name");
-  QString userName = userNameVar.toString();
+  QVariantMap paramsAsMap;
+  QVariant tempVar, nameVar;
+  
+  chew_check_and_convert_variant_map(params, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, tempVar, "user");
+  chew_check_and_convert_variant_map(tempVar, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, nameVar, "name");
+  
+  QString userName = nameVar.toString();
   qDebug() << "Logged in as " << userName;
   
   mChewConnectionState = kChewLoggedIn;
   chewWindow->hide();
+  chewWindow->clearContent();
   this->show();
   this->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
 }
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
-
+  ChewHTMLProxy::printParamsRecursive(params);
+  chewWindow->hide();
+  chewWindow->clearContent();
+  this->ui->streamButton->setEnabled(true);
+  
+   // TODO: parse and set all parameters
 }
 
 void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
-
+  // Opens a link in the default OS browser
+  QVariantMap paramsAsMap;
+  QVariant urlVar;
+  chew_check_and_convert_variant_map(params, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, urlVar, "url");
+  QString url = urlVar.toString();
+  QDesktopServices::openUrl(QUrl(url));
 }
 
 void OBSBasic::ChewLogoutHandler() {
@@ -3634,6 +3625,7 @@ void OBSBasic::on_streamButton_clicked()
 			if (button == QMessageBox::No)
 				return;
 		}
+    ui->logoutButton->setEnabled(true);
 
 		StopStreaming();
 	} else {
@@ -3649,6 +3641,8 @@ void OBSBasic::on_streamButton_clicked()
 			if (button == QMessageBox::No)
 				return;
 		}
+    
+    ui->logoutButton->setEnabled(false);
 
 		StartStreaming();
 	}
@@ -3666,6 +3660,18 @@ void OBSBasic::on_settingsButton_clicked()
 {
 	OBSBasicSettings settings(this);
 	settings.exec();
+}
+
+void OBSBasic::on_logoutButton_clicked() {
+  chewWindow->deleteCookies();
+  this->hide();
+  chewWindow->show();
+  chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
+}
+
+void OBSBasic::on_selectShowButton_clicked() {
+  chewWindow->show();
+  chewWindow->navigateToUrl(QUrl(CHEW_TV_SELECT_SHOW));
 }
 
 void OBSBasic::on_actionWebsite_triggered()

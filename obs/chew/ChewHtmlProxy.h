@@ -15,10 +15,11 @@ private:
   static const int versionMinor_;
   static const int versionBuild_;
   
-  static void printParamsRecursive(QVariant &params);
-
 public:
   explicit ChewHTMLProxy(QObject *parent = 0);
+  
+  // utility method for debug
+  static void printParamsRecursive(const QVariant &params);
 
   Q_PROPERTY(QString operatingSystem MEMBER operatingSystem_ CONSTANT)
   Q_PROPERTY(QString operatingSystemVersion MEMBER operatingSystemVersion_ CONSTANT)
@@ -48,5 +49,26 @@ public slots:
    */
   void execute(const QString &method, const QByteArray &params);
 };
+
+/*
+ * Macros for dealing less verbosely with the qvariantmap that represent the JSON values
+ */
+
+#define chew_check_and_convert_variant_map(varIn, vrmOut) \
+  if (!varIn.canConvert<QVariantMap>()) { \
+    qDebug() << "JSON for open URL malformed? Impossible to convert to QVariantMap"; \
+    return; \
+  } \
+  vrmOut = varIn.toMap();
+
+#define chew_check_and_return_variant(vrmIn, varOut, varFld) \
+  if (!vrmIn.contains(varFld)) { \
+    qDebug() << "Impossible to find " varFld " in the open URL parameters"; \
+    return; \
+  } \
+  varOut = vrmIn.value(varFld);
+
+
+
 
 #endif // CHEWHTMLPROXY_H

@@ -56,15 +56,6 @@
        </item>
        <item>
         <property name="text">
-         <string>Basic.Settings.Stream</string>
-        </property>
-        <property name="icon">
-         <iconset resource="obs.qrc">
-          <normaloff>:/settings/images/settings/network.png</normaloff>:/settings/images/settings/network.png</iconset>
-        </property>
-       </item>
-       <item>
-        <property name="text">
          <string>Basic.Settings.Output</string>
         </property>
         <property name="icon">

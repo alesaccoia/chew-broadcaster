@@ -20,7 +20,8 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebPage->setWebChannel(mWebChannel);
   mWebView->setPage(mWebPage);
 
-  this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+  //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+  this->setModal(true);
 
   mWebChannel->registerObject(QStringLiteral("app"), mProxy);
   
@@ -51,6 +52,8 @@ void ChewWebDialog::setupShortcuts() {
 
 
 void ChewWebDialog::navigateToUrl(QUrl url) {
+  mWebView->setHtml("");
+  mWebView->update();
   mWebPage->load(url);
   mWebView->setPage(mWebPage);
   mWebView->resize(this->size());
@@ -64,5 +67,9 @@ void ChewWebDialog::deleteCookies() {
 
 ChewHTMLProxy* ChewWebDialog::getChewHtmlProxy() {
   return mProxy;
+}
+
+void ChewWebDialog::clearContent() {
+  mWebView->setHtml("<html><body></body></html>");
 }
 

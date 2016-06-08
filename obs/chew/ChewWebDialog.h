@@ -20,6 +20,7 @@ public:
 
   void navigateToUrl(QUrl url);
   void deleteCookies();
+  void clearContent();
 
   ChewHTMLProxy* getChewHtmlProxy();
 
