@@ -99,6 +99,8 @@ private:
   } mChewConnectionState;
   
 	QPointer<ChewWebDialog>        chewWindow;
+  
+  QString mChewStopUrl;
 
 	std::vector<VolControl*> volumes;
 
@@ -304,6 +306,8 @@ private:
 private slots:
   void on_logoutButton_clicked();
   void on_selectShowButton_clicked();
+  void GetForStoppingNetworkError(QNetworkReply::NetworkError code);
+  void GetForStoppingFinishedOk();
 
 public slots:
 	void StartStreaming();
