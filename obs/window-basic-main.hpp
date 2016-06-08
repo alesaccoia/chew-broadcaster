@@ -306,8 +306,7 @@ private:
 private slots:
   void on_logoutButton_clicked();
   void on_selectShowButton_clicked();
-  void GetForStoppingNetworkError(QNetworkReply::NetworkError code);
-  void GetForStoppingFinishedOk();
+  void NetworkErrorOnStopStreaming(QNetworkReply::NetworkError code);
 
 public slots:
 	void StartStreaming();
