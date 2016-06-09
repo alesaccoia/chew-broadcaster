@@ -238,7 +238,6 @@ void OBSBasicSettings::HookWidget(QWidget *widget, const char *signal,
 #define DSCROLL_CHANGED SIGNAL(valueChanged(double))
 
 #define GENERAL_CHANGED SLOT(GeneralChanged())
-#define STREAM1_CHANGED SLOT(Stream1Changed())
 #define OUTPUTS_CHANGED SLOT(OutputsChanged())
 #define AUDIO_RESTART   SLOT(AudioChangedRestart())
 #define AUDIO_CHANGED   SLOT(AudioChanged())
@@ -420,7 +419,6 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 
 	installEventFilter(CreateShortcutFilter());
 
-	LoadServiceTypes();
 	LoadEncoderTypes();
 	LoadColorRanges();
 	LoadFormats();
@@ -548,22 +546,6 @@ void OBSBasicSettings::SaveSpinBox(QSpinBox *widget, const char *section,
 		config_set_int(main->Config(), section, value, widget->value());
 }
 
-void OBSBasicSettings::LoadServiceTypes()
-{
-	const char    *type;
-	size_t        idx = 0;
-
-	while (obs_enum_service_types(idx++, &type)) {
-		const char *name = obs_service_get_display_name(type);
-		QString qName = QT_UTF8(name);
-		QString qType = QT_UTF8(type);
-
-		ui->streamType->addItem(qName, qType);
-	}
-
-	type = obs_service_get_type(main->GetService());
-	SetComboByValue(ui->streamType, type);
-}
 
 #define TEXT_USE_STREAM_ENC \
 	QTStr("Basic.Settings.Output.Adv.Recording.UseStreamEncoder")
@@ -818,37 +800,6 @@ void OBSBasicSettings::LoadGeneralSettings()
 	ui->warnBeforeStreamStop->setChecked(warnBeforeStreamStop);
 
 	loading = false;
-}
-
-void OBSBasicSettings::LoadStream1Settings()
-{
-	QLayout *layout = ui->streamContainer->layout();
-	obs_service_t *service = main->GetService();
-	const char *type = obs_service_get_type(service);
-
-	loading = true;
-
-	obs_data_t *settings = obs_service_get_settings(service);
-
-	delete streamProperties;
-	streamProperties = new OBSPropertiesView(settings, type,
-			(PropertiesReloadCallback)obs_get_service_properties,
-			170);
-
-	streamProperties->setProperty("changed", QVariant(false));
-	layout->addWidget(streamProperties);
-
-	QObject::connect(streamProperties, SIGNAL(Changed()),
-			this, STREAM1_CHANGED);
-
-	obs_data_release(settings);
-
-	loading = false;
-
-	if (main->StreamingActive()) {
-		ui->streamType->setEnabled(false);
-		ui->streamContainer->setEnabled(false);
-	}
 }
 
 void OBSBasicSettings::LoadRendererList()
@@ -2062,8 +2013,6 @@ void OBSBasicSettings::LoadSettings(bool changedOnly)
 {
 	if (!changedOnly || generalChanged)
 		LoadGeneralSettings();
-	if (!changedOnly || stream1Changed)
-		LoadStream1Settings();
 	if (!changedOnly || outputsChanged)
 		LoadOutputSettings();
 	if (!changedOnly || audioChanged)
@@ -2123,26 +2072,6 @@ void OBSBasicSettings::SaveGeneralSettings()
 	config_set_bool(GetGlobalConfig(), "BasicWindow",
 			"WarnBeforeStoppingStream",
 			ui->warnBeforeStreamStop->isChecked());
-}
-
-void OBSBasicSettings::SaveStream1Settings()
-{
-	QString streamType = GetComboData(ui->streamType);
-
-	obs_service_t *oldService = main->GetService();
-	obs_data_t *hotkeyData = obs_hotkeys_save_service(oldService);
-
-	obs_service_t *newService = obs_service_create(QT_TO_UTF8(streamType),
-			"default_service", streamProperties->GetSettings(),
-			hotkeyData);
-
-	obs_data_release(hotkeyData);
-	if (!newService)
-		return;
-
-	main->SetService(newService);
-	main->SaveService();
-	obs_service_release(newService);
 }
 
 void OBSBasicSettings::SaveVideoSettings()
@@ -2492,8 +2421,6 @@ void OBSBasicSettings::SaveSettings()
 {
 	if (generalChanged)
 		SaveGeneralSettings();
-	if (stream1Changed)
-		SaveStream1Settings();
 	if (outputsChanged)
 		SaveOutputSettings();
 	if (audioChanged)
@@ -2516,8 +2443,6 @@ void OBSBasicSettings::SaveSettings()
 		std::string changed;
 		if (generalChanged)
 			AddChangedVal(changed, "general");
-		if (stream1Changed)
-			AddChangedVal(changed, "stream 1");
 		if (outputsChanged)
 			AddChangedVal(changed, "outputs");
 		if (audioChanged)
@@ -2606,29 +2531,6 @@ void OBSBasicSettings::on_buttonBox_clicked(QAbstractButton *button)
 	}
 }
 
-void OBSBasicSettings::on_streamType_currentIndexChanged(int idx)
-{
-	if (loading)
-		return;
-
-	QLayout *layout = ui->streamContainer->layout();
-	QString streamType = ui->streamType->itemData(idx).toString();
-	obs_data_t *settings = obs_service_defaults(QT_TO_UTF8(streamType));
-
-	delete streamProperties;
-	streamProperties = new OBSPropertiesView(settings,
-			QT_TO_UTF8(streamType),
-			(PropertiesReloadCallback)obs_get_service_properties,
-			170);
-
-	streamProperties->setProperty("changed", QVariant(true));
-	layout->addWidget(streamProperties);
-
-	QObject::connect(streamProperties, SIGNAL(Changed()),
-			this, STREAM1_CHANGED);
-
-	obs_data_release(settings);
-}
 
 void OBSBasicSettings::on_simpleOutputBrowse_clicked()
 {
@@ -2851,14 +2753,6 @@ void OBSBasicSettings::GeneralChanged()
 	}
 }
 
-void OBSBasicSettings::Stream1Changed()
-{
-	if (!loading) {
-		stream1Changed = true;
-		sender()->setProperty("changed", QVariant(true));
-		EnableApplyButton(true);
-	}
-}
 
 void OBSBasicSettings::OutputsChanged()
 {
@@ -3198,17 +3092,14 @@ void OBSBasicSettings::SimpleRecordingEncoderChanged()
 	QString warning;
 	bool advanced = ui->simpleOutAdvanced->isChecked();
 	bool enforceBitrate = ui->simpleOutEnforce->isChecked() || !advanced;
-	OBSService service;
+	OBSService service = main->GetService();
 
-	if (stream1Changed) {
-		QString streamType = GetComboData(ui->streamType);
-		service = obs_service_create_private(
-				QT_TO_UTF8(streamType), nullptr,
-				streamProperties->GetSettings());
-		obs_service_release(service);
-	} else {
-		service = main->GetService();
-	}
+//		QString streamType = GetComboData(ui->streamType);
+//		service = obs_service_create_private(
+//				QT_TO_UTF8(streamType), nullptr,
+//				streamProperties->GetSettings());
+//		obs_service_release(service);
+
 
 	delete simpleOutRecWarning;
 

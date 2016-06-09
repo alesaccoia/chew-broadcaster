@@ -87,7 +87,6 @@ private:
 	std::unique_ptr<Ui::OBSBasicSettings> ui;
 
 	bool generalChanged = false;
-	bool stream1Changed = false;
 	bool outputsChanged = false;
 	bool audioChanged = false;
 	bool videoChanged = false;
@@ -147,7 +146,7 @@ private:
 
 	inline bool Changed() const
 	{
-		return generalChanged || outputsChanged || stream1Changed ||
+		return generalChanged || outputsChanged  ||
 			audioChanged || videoChanged || advancedChanged ||
 			hotkeysChanged;
 	}
@@ -160,7 +159,6 @@ private:
 	inline void ClearChanged()
 	{
 		generalChanged = false;
-		stream1Changed = false;
 		outputsChanged = false;
 		audioChanged   = false;
 		videoChanged   = false;
@@ -226,7 +224,6 @@ private:
 	void LoadFPSData();
 
 	void SaveGeneralSettings();
-	void SaveStream1Settings();
 	void SaveOutputSettings();
 	void SaveAudioSettings();
 	void SaveVideoSettings();
@@ -248,7 +245,6 @@ private slots:
 	void on_listWidget_itemSelectionChanged();
 	void on_buttonBox_clicked(QAbstractButton *button);
 
-	void on_streamType_currentIndexChanged(int idx);
 	void on_simpleOutputBrowse_clicked();
 	void on_advOutRecPathBrowse_clicked();
 	void on_advOutFFPathBrowse_clicked();
@@ -272,7 +268,6 @@ private slots:
 	void AudioChangedRestart();
 	void ReloadAudioSources();
 	void OutputsChanged();
-	void Stream1Changed();
 	void VideoChanged();
 	void VideoChangedResolution();
 	void VideoChangedRestart();
