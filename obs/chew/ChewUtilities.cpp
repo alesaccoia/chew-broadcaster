@@ -12,7 +12,7 @@ InternetConnectionChecker::InternetConnectionChecker() {
 
 void InternetConnectionChecker::run() {
   QNetworkRequest request;
-  request.setUrl(QUrl("http://www.google.com"));
+  request.setUrl(QUrl("http://www.chew.tv"));
 
   QNetworkAccessManager *manager = new QNetworkAccessManager(this);
   QNetworkReply *reply = manager->get(request);

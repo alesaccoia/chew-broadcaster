@@ -22,6 +22,7 @@ void ChewHTMLProxy::execute(const QString &method, const QByteArray &params) {
   if (err.error != QJsonParseError::NoError) {
     qDebug() << "There was an error with the Parsed JSON : " << err.errorString();
   }
+  printParamsRecursive(params);
   emit executeJs(method, jsonVariant);
 }
 

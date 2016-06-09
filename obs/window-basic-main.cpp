@@ -2623,7 +2623,7 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 		return;
   
   if (wasStreamActive) {
-    chew::SynchronousRequestWithTimeout req(QUrl(mChewStopUrl), 5000);
+    chew::SynchronousRequestWithTimeout req(QUrl(mChewStopUrl + "&exit=true"), 5000);
     if (!req.run()) {
       qDebug() << "Problem sending the stop_url to the server while shutting down";
     }
