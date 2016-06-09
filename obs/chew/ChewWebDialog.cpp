@@ -15,7 +15,6 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebChannel = new QWebChannel();
   mWebView = new QWebEngineView(this);
 
-  mProxy = new ChewHTMLProxy;
   mWebPage->setView(mWebView);
   mWebPage->setWebChannel(mWebChannel);
   mWebView->setPage(mWebPage);
@@ -60,11 +59,6 @@ void ChewWebDialog::navigateToUrl(QUrl url) {
 
 void ChewWebDialog::deleteCookies() {
  mWebPage->profile()->cookieStore()->deleteAllCookies();
-}
-
-
-ChewHTMLProxy* ChewWebDialog::getChewHtmlProxy() {
-  return mProxy;
 }
 
 void ChewWebDialog::clearContent() {

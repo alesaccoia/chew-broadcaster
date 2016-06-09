@@ -2,6 +2,7 @@
 #define CHEWHTMLPROXY_H
 
 #include <QObject>
+#include <QVariant>
 
 class ChewHTMLProxy : public QObject
 {
@@ -42,13 +43,7 @@ public slots:
 
 private:
   QVariant mProperties;
-  
-//  static const QString operatingSystem_;
-//  static const QString operatingSystemVersion_;
-//  static const QString versionString_;
-//  static const int versionMajor_;
-//  static const int versionMinor_;
-//  static const int versionBuild_;
+
 };
 
 /*

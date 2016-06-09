@@ -21,7 +21,7 @@ public:
   void deleteCookies();
   void clearContent();
 
-  QWebChannel* getWebChannel();
+  QWebChannel* getWebChannel() { return mWebChannel; }
 
 private:
 

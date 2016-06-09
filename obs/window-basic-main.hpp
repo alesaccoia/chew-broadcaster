@@ -100,8 +100,9 @@ private:
   } mChewConnectionState;
   
 	QPointer<ChewWebDialog>        chewWindow;
-	QPointer<ChewHtmlProxy>        chewJsProxy;
+	QPointer<ChewHTMLProxy>        chewJsProxy;
   
+  QString mChewShowId;
   QString mChewStopUrl;
 
 	std::vector<VolControl*> volumes;

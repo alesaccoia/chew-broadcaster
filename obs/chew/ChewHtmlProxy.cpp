@@ -3,12 +3,6 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-const QString ChewHTMLProxy::operatingSystem_ = "Mac";
-const QString ChewHTMLProxy::operatingSystemVersion_ = "10.9";
-const QString ChewHTMLProxy::versionString_ = "1.0.0";
-const int ChewHTMLProxy::versionMajor_ = 1;
-const int ChewHTMLProxy::versionMinor_ = 0;
-const int ChewHTMLProxy::versionBuild_ = 0;
 
 ChewHTMLProxy::ChewHTMLProxy(QObject *parent)
    : QObject(parent)

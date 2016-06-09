@@ -63,6 +63,8 @@
 
 #define CHEW_TV_LOGIN "https://chew.tv/_broadcaster/"
 #define CHEW_TV_SELECT_SHOW "https://chew.tv/_broadcaster/shows"
+#define CHEW_TV_EDIT_SHOW_START "https://chew.tv/_broadcaster/shows/"
+#define CHEW_TV_EDIT_SHOW_END "/info"
 
 
 using namespace std;
@@ -1087,12 +1089,13 @@ void OBSBasic::OBSInit()
   chewJsProxy = new ChewHTMLProxy();
   
   ChewAssignProxyProperties();
+  
+  QObject::connect(chewJsProxy, &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
 
   chewWindow->setWindowTitle("Chew.tv");
   chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
   
-  QObject::connect(chewWindow->getChewHtmlProxy(), &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
 
 
 //#ifndef _WIN32
@@ -1188,7 +1191,7 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   QVariantMap paramsAsMap, streamMap, settingsMap, resolutionMap, bitrateMap;
-  QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var;
+  QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var, id_var;
   
   chew_check_and_convert_variant_map(params, paramsAsMap);
   
@@ -1198,6 +1201,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   chew_check_and_return_variant(streamMap, stream_url_var, "stream_url");
   chew_check_and_return_variant(streamMap, stream_key_var, "stream_key");
   chew_check_and_return_variant(streamMap, show_name_var, "name");
+  chew_check_and_return_variant(streamMap, id_var, "id");
   
   // { stop_url
   chew_check_and_return_variant(paramsAsMap, stop_url_var, "stop_url");
@@ -1233,6 +1237,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   
   ChewSetBitrates(audioBitrate.toUInt(), videoBitrate.toUInt());
   
+  mChewShowId = id_var.toInt();
   mChewStopUrl = stop_url_var.toString();
   
   QString show_title = show_name_var.toString();
@@ -3765,6 +3770,8 @@ void OBSBasic::on_streamButton_clicked()
     // re-enable the logout option
     ui->logoutButton->setEnabled(true);
     
+    ui->selectShowButton->setText("Select Show");
+    
     // this is asynhronous
     
     QNetworkRequest request;
@@ -3790,6 +3797,8 @@ void OBSBasic::on_streamButton_clicked()
 			if (button == QMessageBox::No)
 				return;
 		}
+    
+    ui->selectShowButton->setText("Edit Show Info");
     
     ui->logoutButton->setEnabled(false);
 
@@ -3828,8 +3837,13 @@ void OBSBasic::on_logoutButton_clicked() {
 }
 
 void OBSBasic::on_selectShowButton_clicked() {
-  chewWindow->show();
-  chewWindow->navigateToUrl(QUrl(CHEW_TV_SELECT_SHOW));
+  if (!outputHandler->StreamingActive()) {
+    chewWindow->show();
+    chewWindow->navigateToUrl(QUrl(CHEW_TV_SELECT_SHOW));
+  } else {
+    chewWindow->show();
+    chewWindow->navigateToUrl(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
+  }
 }
 
 void OBSBasic::on_actionWebsite_triggered()
