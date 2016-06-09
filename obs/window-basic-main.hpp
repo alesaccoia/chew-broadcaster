@@ -34,6 +34,7 @@
 #include <util/util.hpp>
 
 #include "chew/ChewWebDialog.h"
+#include "chew/ChewHtmlProxy.h"
 
 #include <QPointer>
 
@@ -99,6 +100,7 @@ private:
   } mChewConnectionState;
   
 	QPointer<ChewWebDialog>        chewWindow;
+	QPointer<ChewHtmlProxy>        chewJsProxy;
   
   QString mChewStopUrl;
 
@@ -298,6 +300,9 @@ private:
     
   // callback for anything that arrives from the webview
   void ChewWebViewHandler(const QString &method, const QVariant &params);
+  
+  // populates the chewApp.properties JS object exposed to the WebView
+  void ChewAssignProxyProperties();
   
   void ChewAuthenticationHandler(const QVariant &params);
   void ChewShowSelectionHandler(const QVariant &params);

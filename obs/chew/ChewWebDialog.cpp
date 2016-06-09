@@ -23,8 +23,6 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   this->setModal(true);
 
-  mWebChannel->registerObject(QStringLiteral("app"), mProxy);
-  
   setupShortcuts();
 }
 

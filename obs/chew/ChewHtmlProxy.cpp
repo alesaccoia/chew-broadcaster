@@ -46,3 +46,7 @@ void ChewHTMLProxy::printParamsRecursive(const QVariant &params) {
     qDebug() << "(" << params.typeName() << ")" << params;
   }
 }
+
+QVariant& ChewHTMLProxy::getProperties() {
+  return mProperties;
+}

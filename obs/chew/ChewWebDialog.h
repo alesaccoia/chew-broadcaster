@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QtWebEngineWidgets>
 #include <QWebChannel>
-#include "ChewHTMLProxy.h"
 
 namespace Ui {
 class ChewWebDialog;
@@ -22,7 +21,7 @@ public:
   void deleteCookies();
   void clearContent();
 
-  ChewHTMLProxy* getChewHtmlProxy();
+  QWebChannel* getWebChannel();
 
 private:
 
@@ -33,7 +32,6 @@ private:
   QWebEnginePage* mWebPage;
   QWebEngineView* mWebView;
   QWebChannel* mWebChannel;
-  ChewHTMLProxy* mProxy;
 };
 
 #endif // CHEWWEBDIALOG_H

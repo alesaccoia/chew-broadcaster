@@ -1084,6 +1084,9 @@ void OBSBasic::OBSInit()
 	}
   
   chewWindow = new ChewWebDialog();
+  chewJsProxy = new ChewHTMLProxy();
+  
+  ChewAssignProxyProperties();
 
   chewWindow->setWindowTitle("Chew.tv");
   chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
@@ -1130,6 +1133,38 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
 
+}
+
+void OBSBasic::ChewAssignProxyProperties() {
+  chewWindow->getWebChannel()->deregisterObject(chewJsProxy);
+  
+  QVariantMap vrMap;
+  vrMap.insert("versionMajor", 1);
+  vrMap.insert("versionMinor", 0);
+  vrMap.insert("versionPatch", 0);
+  
+  QVariantMap settingsMap;
+  
+  QVariantMap resolutionMap;
+  resolutionMap.insert("baseCX", 1280);
+  resolutionMap.insert("baseCY", 768);
+  resolutionMap.insert("outputCX", 1280);
+  resolutionMap.insert("outputCY", 768);
+  settingsMap.insert("resolution", resolutionMap);
+  
+  QVariantMap bitrateMap;
+  bitrateMap.insert("video", 2500);
+  bitrateMap.insert("audio", 320);
+  settingsMap.insert("bitrate", bitrateMap);
+  
+  settingsMap.insert("fps", 60);
+  
+  vrMap.insert("settings", settingsMap);
+  
+
+  chewJsProxy->getProperties() = vrMap;
+  
+  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
 
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
