@@ -53,6 +53,7 @@
 #include "obs-properties.h"
 
 #include "chew/ChewUtilities.h"
+#include "ChewBroadcasterVersion.h"
 
 #include <fstream>
 #include <sstream>

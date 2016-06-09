@@ -102,6 +102,13 @@ elseif(UNIX)
                 Qt5::X11Extras)
 endif()
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/chew/ChewBroadcasterVersion.h.in"
+	"${CMAKE_BINARY_DIR}/config/ChewBroadcasterVersion.h")
+
+set(chew_config_HEADERS
+	"${CMAKE_BINARY_DIR}/config/ChewBroadcasterVersion.h")
+
 set(obs_SOURCES
 	${obs_PLATFORM_SOURCES}
 	obs-app.cpp
@@ -216,7 +223,8 @@ add_executable(obs WIN32
 	${obs_SOURCES}
 	${obs_HEADERS}
 	${obs_UI_HEADERS}
-	${obs_QRC_SOURCES})
+	${obs_QRC_SOURCES}
+  ${chew_config_HEADERS})
 
 if(WIN32)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
