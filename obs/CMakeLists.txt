@@ -253,6 +253,7 @@ define_graphic_modules(obs)
 
 install_obs_core(obs)
 install_obs_data(obs data obs-studio)
+install_obs_data(obs "chew/data" chew)
 
 if (UNIX AND UNIX_STRUCTURE AND NOT APPLE)
 	install(FILES dist/obs.desktop DESTINATION share/applications)
