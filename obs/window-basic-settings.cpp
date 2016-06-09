@@ -277,7 +277,6 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	HookWidget(ui->sourceSnapping,       CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->snapDistance,         DSCROLL_CHANGED,GENERAL_CHANGED);
 	HookWidget(ui->outputMode,           COMBO_CHANGED,  OUTPUTS_CHANGED);
-	HookWidget(ui->streamType,           COMBO_CHANGED,  STREAM1_CHANGED);
 	HookWidget(ui->simpleOutputPath,     EDIT_CHANGED,   OUTPUTS_CHANGED);
 	HookWidget(ui->simpleNoSpace,        CHECK_CHANGED,  OUTPUTS_CHANGED);
 	HookWidget(ui->simpleOutRecFormat,   COMBO_CHANGED,  OUTPUTS_CHANGED);
@@ -347,12 +346,7 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	HookWidget(ui->baseResolution,       CBEDIT_CHANGED, VIDEO_RES);
 	HookWidget(ui->outputResolution,     CBEDIT_CHANGED, VIDEO_RES);
 	HookWidget(ui->downscaleFilter,      COMBO_CHANGED,  VIDEO_CHANGED);
-	HookWidget(ui->fpsType,              COMBO_CHANGED,  VIDEO_CHANGED);
 	HookWidget(ui->fpsCommon,            COMBO_CHANGED,  VIDEO_CHANGED);
-	HookWidget(ui->fpsInteger,           SCROLL_CHANGED, VIDEO_CHANGED);
-	HookWidget(ui->fpsInteger,           SCROLL_CHANGED, VIDEO_CHANGED);
-	HookWidget(ui->fpsNumerator,         SCROLL_CHANGED, VIDEO_CHANGED);
-	HookWidget(ui->fpsDenominator,       SCROLL_CHANGED, VIDEO_CHANGED);
 	HookWidget(ui->renderer,             COMBO_CHANGED,  ADV_RESTART);
 	HookWidget(ui->adapter,              COMBO_CHANGED,  ADV_RESTART);
 	HookWidget(ui->colorFormat,          COMBO_CHANGED,  ADV_CHANGED);
@@ -1049,7 +1043,8 @@ void OBSBasicSettings::LoadResolutionLists()
 	ui->outputResolution->lineEdit()->setText(outputResString.c_str());
 }
 
-static inline void LoadFPSCommon(OBSBasic *main, Ui::OBSBasicSettings *ui)
+
+void OBSBasicSettings::LoadFPSData()
 {
 	const char *val = config_get_string(main->Config(), "Video",
 			"FPSCommon");
@@ -1057,35 +1052,6 @@ static inline void LoadFPSCommon(OBSBasic *main, Ui::OBSBasicSettings *ui)
 	int idx = ui->fpsCommon->findText(val);
 	if (idx == -1) idx = 3;
 	ui->fpsCommon->setCurrentIndex(idx);
-}
-
-static inline void LoadFPSInteger(OBSBasic *main, Ui::OBSBasicSettings *ui)
-{
-	uint32_t val = config_get_uint(main->Config(), "Video", "FPSInt");
-	ui->fpsInteger->setValue(val);
-}
-
-static inline void LoadFPSFraction(OBSBasic *main, Ui::OBSBasicSettings *ui)
-{
-	uint32_t num = config_get_uint(main->Config(), "Video", "FPSNum");
-	uint32_t den = config_get_uint(main->Config(), "Video", "FPSDen");
-
-	ui->fpsNumerator->setValue(num);
-	ui->fpsDenominator->setValue(den);
-}
-
-void OBSBasicSettings::LoadFPSData()
-{
-	LoadFPSCommon(main, ui.get());
-	LoadFPSInteger(main, ui.get());
-	LoadFPSFraction(main, ui.get());
-
-	uint32_t fpsType = config_get_uint(main->Config(), "Video",
-			"FPSType");
-	if (fpsType > 2) fpsType = 0;
-
-	ui->fpsType->setCurrentIndex(fpsType);
-	ui->fpsTypes->setCurrentIndex(fpsType);
 }
 
 void OBSBasicSettings::LoadVideoSettings()
@@ -2183,7 +2149,6 @@ void OBSBasicSettings::SaveVideoSettings()
 {
 	QString baseResolution   = ui->baseResolution->currentText();
 	QString outputResolution = ui->outputResolution->currentText();
-	int     fpsType          = ui->fpsType->currentIndex();
 	uint32_t cx = 0, cy = 0;
 
 	/* ------------------- */
@@ -2200,13 +2165,8 @@ void OBSBasicSettings::SaveVideoSettings()
 		config_set_uint(main->Config(), "Video", "OutputCY", cy);
 	}
 
-	if (WidgetChanged(ui->fpsType))
-		config_set_uint(main->Config(), "Video", "FPSType", fpsType);
-
 	SaveCombo(ui->fpsCommon, "Video", "FPSCommon");
-	SaveSpinBox(ui->fpsInteger, "Video", "FPSInt");
-	SaveSpinBox(ui->fpsNumerator, "Video", "FPSNum");
-	SaveSpinBox(ui->fpsDenominator, "Video", "FPSDen");
+  
 	SaveComboData(ui->downscaleFilter, "Video", "ScaleType");
 
 #ifdef _WIN32

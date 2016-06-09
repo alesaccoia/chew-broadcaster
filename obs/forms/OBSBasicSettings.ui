@@ -2591,190 +2591,58 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QComboBox" name="fpsType">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>FPS</string>
            </property>
-           <property name="currentText">
-            <string>Basic.Settings.Video.FPSCommon</string>
+           <property name="buddy">
+            <cstring>fps</cstring>
            </property>
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
-           </property>
-           <item>
-            <property name="text">
-             <string>Basic.Settings.Video.FPSCommon</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Basic.Settings.Video.FPSInteger</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Basic.Settings.Video.FPSFraction</string>
-            </property>
-           </item>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QStackedWidget" name="fpsTypes">
-           <property name="currentIndex">
-            <number>0</number>
+          <widget class="QComboBox" name="fpsCommon">
+           <property name="currentText">
+            <string notr="true">30</string>
            </property>
-           <widget class="QWidget" name="page">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item alignment="Qt::AlignTop">
-              <widget class="QComboBox" name="fpsCommon">
-               <property name="currentText">
-                <string notr="true">30</string>
-               </property>
-               <property name="currentIndex">
-                <number>3</number>
-               </property>
-               <item>
-                <property name="text">
-                 <string notr="true">10</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">20</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">29.97</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">30</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">48</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">59.94</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string notr="true">60</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_3">
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item alignment="Qt::AlignTop">
-              <widget class="QSpinBox" name="fpsInteger">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>120</number>
-               </property>
-               <property name="value">
-                <number>30</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_2">
-            <layout class="QFormLayout" name="formLayout_4">
-             <property name="fieldGrowthPolicy">
-              <enum>QFormLayout::ExpandingFieldsGrow</enum>
-             </property>
-             <property name="labelAlignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="fpsNumerator">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>1000000</number>
-               </property>
-               <property name="value">
-                <number>30</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QSpinBox" name="fpsDenominator">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>1000000</number>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>Basic.Settings.Video.Numerator</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string>Basic.Settings.Video.Denominator</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
+           <property name="currentIndex">
+            <number>3</number>
+           </property>
+           <item>
+            <property name="text">
+             <string notr="true">10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">20</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">29.97</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">30</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">48</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">59.94</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string notr="true">60</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="4" column="1">

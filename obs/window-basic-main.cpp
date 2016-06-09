@@ -827,11 +827,7 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_uint  (basicConfig, "Video", "OutputCX", scale_cx);
 	config_set_default_uint  (basicConfig, "Video", "OutputCY", scale_cy);
 
-	config_set_default_uint  (basicConfig, "Video", "FPSType", 0);
 	config_set_default_string(basicConfig, "Video", "FPSCommon", "30");
-	config_set_default_uint  (basicConfig, "Video", "FPSInt", 30);
-	config_set_default_uint  (basicConfig, "Video", "FPSNum", 30);
-	config_set_default_uint  (basicConfig, "Video", "FPSDen", 1);
 	config_set_default_string(basicConfig, "Video", "ScaleType", "bicubic");
 	config_set_default_string(basicConfig, "Video", "ColorFormat", "NV12");
 	config_set_default_string(basicConfig, "Video", "ColorSpace", "601");
@@ -1179,9 +1175,11 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   chew_check_and_return_variant(settingsMap, tempVar, "bitrate");
   chew_check_and_convert_variant_map(tempVar, bitrateMap);
   
-  QVariant resX, resY;
-  chew_check_and_return_variant(resolutionMap, resX, "x");
-  chew_check_and_return_variant(resolutionMap, resY, "y");
+  QVariant baseCX, baseCY, outputCX, outputCY;
+  chew_check_and_return_variant(resolutionMap, baseCX, "baseCX");
+  chew_check_and_return_variant(resolutionMap, baseCY, "baseCY");
+  chew_check_and_return_variant(resolutionMap, outputCX, "outputCX");
+  chew_check_and_return_variant(resolutionMap, outputCY, "outputCY");
   
   QVariant videoBitrate, audioBitrate;
   chew_check_and_return_variant(bitrateMap, videoBitrate, "video");
@@ -1195,9 +1193,9 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   
   ChewSetCurrentServerSettings(stream_url, stream_key);
   
-  ChewSetVideoResolution(resX.toUInt(), resY.toUInt());
+  ChewSetVideoSettings(baseCX.toUInt(), baseCY.toUInt(), outputCX.toUInt(), outputCY.toUInt(), fps.toFloat());
   
-  ChewSetAudioVideoBitrate(audioBitrate.toUInt(), videoBitrate.toUInt());
+  ChewSetBitrates(audioBitrate.toUInt(), videoBitrate.toUInt());
   
   mChewStopUrl = stop_url_var.toString();
   
@@ -1230,14 +1228,15 @@ void OBSBasic::ChewSetCurrentServerSettings(const QString& server, const QString
   obs_data_release(settings);
 }
 
-void OBSBasic::ChewSetVideoResolution(uint cx, uint cy) {
-  config_set_uint(Config(), "Video", "BaseCX", cx);
-  config_set_uint(Config(), "Video", "BaseCY", cy);
-  config_set_uint(Config(), "Video", "OutputCX", cx);
-  config_set_uint(Config(), "Video", "OutputCY", cy);
+void OBSBasic::ChewSetVideoSettings(uint baseCX, uint baseCY, uint outputCX, uint outputCY, float fps) {
+  config_set_uint(Config(), "Video", "BaseCX", baseCX);
+  config_set_uint(Config(), "Video", "BaseCY", baseCY);
+  config_set_uint(Config(), "Video", "OutputCX", outputCX);
+  config_set_uint(Config(), "Video", "OutputCY", outputCY);
+  config_set_uint(Config(), "Video", "CommonFPS", fps);
 }
 
-void OBSBasic::ChewSetAudioVideoBitrate(uint aBitrate, uint vBitrate) {
+void OBSBasic::ChewSetBitrates(uint aBitrate, uint vBitrate) {
   obs_data_t *videoSettings = obs_data_create();
   obs_data_t *audioSettings = obs_data_create();
   obs_data_set_int(videoSettings, "bitrate", vBitrate);

@@ -305,8 +305,8 @@ private:
   void ChewLogoutHandler();
   
   void ChewSetCurrentServerSettings(const QString& server, const QString& key);
-  void ChewSetVideoResolution(uint x, uint y);
-  void ChewSetAudioVideoBitrate(uint aBitrate, uint vBitrate);
+  void ChewSetVideoSettings(uint baseCX, uint baseCY, uint outputCX, uint outputCY, float fps);
+  void ChewSetBitrates(uint aBitrate, uint vBitrate);
 private slots:
   void on_logoutButton_clicked();
   void on_selectShowButton_clicked();
