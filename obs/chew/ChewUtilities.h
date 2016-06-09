@@ -31,10 +31,12 @@ class InternetConnectionChecker : public QObject {
 class SynchronousRequestWithTimeout : public QObject {
   Q_OBJECT
  public:
-  SynchronousRequestWithTimeout(const QUrl& url, unsigned int milliseconds = 2000);
+  enum RequestMethod { GET, POST};
+  SynchronousRequestWithTimeout(const QUrl& url, RequestMethod method = GET, unsigned int milliseconds = 2000);
   bool run();
  private:
   QUrl mUrl;
+  RequestMethod mMethod;
   unsigned int mTime;
 };
 

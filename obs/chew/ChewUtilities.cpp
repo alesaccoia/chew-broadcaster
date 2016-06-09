@@ -32,8 +32,9 @@ void InternetConnectionChecker::requestFinished() {
 }
 
 
-SynchronousRequestWithTimeout::SynchronousRequestWithTimeout(const QUrl& url, unsigned int milliseconds)
+SynchronousRequestWithTimeout::SynchronousRequestWithTimeout(const QUrl& url, RequestMethod method, unsigned int milliseconds)
   : mUrl(url)
+  , mMethod(method)
   , mTime(milliseconds) {
   
 
@@ -41,12 +42,11 @@ SynchronousRequestWithTimeout::SynchronousRequestWithTimeout(const QUrl& url, un
 
 bool SynchronousRequestWithTimeout::run() {
   QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-  QNetworkRequest request;
-  QNetworkReply *reply = manager->get(request);
+  QNetworkRequest request(mUrl);
+  QByteArray data;
+  QNetworkReply *reply = (mMethod == GET) ? manager->get(request) : manager->post(request, data);
+  
   QTimer timer;
-  
-  request.setUrl(mUrl);
-  
   timer.setSingleShot(true);
   QEventLoop loop;
   connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));

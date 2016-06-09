@@ -2718,7 +2718,7 @@ void OBSBasic::closeEvent(QCloseEvent *event)
 		return;
   
   if (wasStreamActive) {
-    chew::SynchronousRequestWithTimeout req(QUrl(mChewStopUrl + "&exit=true"), 5000);
+    chew::SynchronousRequestWithTimeout req(QUrl(mChewStopUrl + "&exit=true"), chew::SynchronousRequestWithTimeout::POST, 5000);
     if (!req.run()) {
       qDebug() << "Problem sending the stop_url to the server while shutting down";
     }
@@ -3767,20 +3767,20 @@ void OBSBasic::on_streamButton_clicked()
 				return;
 		}
     
+    
+    // synchronous call
+    chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST);
+    
+    if (!sr.run()) {
+      QMessageBox msgBox;
+      msgBox.setText("Error notifying the Chew server for the show termination, Error ");
+      msgBox.exec();
+    }
+    
     // re-enable the logout option
     ui->logoutButton->setEnabled(true);
     
     ui->selectShowButton->setText("Select Show");
-    
-    // this is asynhronous
-    
-    QNetworkRequest request;
-    request.setUrl(QUrl(mChewStopUrl));
-
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    QNetworkReply *reply = manager->get(request);
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(NetworkErrorOnStopStreaming(QNetworkReply::NetworkError)));
     
     StopStreaming();
 
@@ -3831,6 +3831,7 @@ void OBSBasic::on_settingsButton_clicked()
 
 void OBSBasic::on_logoutButton_clicked() {
   chewWindow->deleteCookies();
+  chewWindow->setModal(true);
   this->hide();
   chewWindow->show();
   chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
@@ -3839,9 +3840,11 @@ void OBSBasic::on_logoutButton_clicked() {
 void OBSBasic::on_selectShowButton_clicked() {
   if (!outputHandler->StreamingActive()) {
     chewWindow->show();
+    chewWindow->setModal(true);
     chewWindow->navigateToUrl(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
     chewWindow->show();
+    chewWindow->setModal(false);
     chewWindow->navigateToUrl(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
   }
 }
