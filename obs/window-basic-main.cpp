@@ -1155,29 +1155,67 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
 }
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
-  QVariantMap paramsAsMap, streamMap;
-  QVariant tempVar, stream_url_var, stream_key_var, name_var, stop_url_var;
+  QVariantMap paramsAsMap, streamMap, settingsMap, resolutionMap, bitrateMap;
+  QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var;
   
   chew_check_and_convert_variant_map(params, paramsAsMap);
+  
+  // { show: {stream_url: , stream_key:, name: }
   chew_check_and_return_variant(paramsAsMap, tempVar, "show");
   chew_check_and_convert_variant_map(tempVar, streamMap);
   chew_check_and_return_variant(streamMap, stream_url_var, "stream_url");
   chew_check_and_return_variant(streamMap, stream_key_var, "stream_key");
-  chew_check_and_return_variant(streamMap, name_var, "name");
+  chew_check_and_return_variant(streamMap, show_name_var, "name");
+  
+  // { stop_url
   chew_check_and_return_variant(paramsAsMap, stop_url_var, "stop_url");
+  
+  // { settings: { resolution: { x, y }, bitrate: { video:, audio:}  } }
+  chew_check_and_return_variant(paramsAsMap, tempVar, "settings");
+  chew_check_and_convert_variant_map(tempVar, settingsMap);
+  chew_check_and_return_variant(settingsMap, tempVar, "resolution");
+  chew_check_and_convert_variant_map(tempVar, resolutionMap);
+  
+  chew_check_and_return_variant(settingsMap, tempVar, "bitrate");
+  chew_check_and_convert_variant_map(tempVar, bitrateMap);
+  
+  QVariant resX, resY;
+  chew_check_and_return_variant(resolutionMap, resX, "x");
+  chew_check_and_return_variant(resolutionMap, resY, "y");
+  
+  QVariant videoBitrate, audioBitrate;
+  chew_check_and_return_variant(bitrateMap, videoBitrate, "video");
+  chew_check_and_return_variant(bitrateMap, audioBitrate, "audio");
+  
+  QVariant fps;
+  chew_check_and_return_variant(settingsMap, fps, "fps");
   
   QString stream_url = stream_url_var.toString();
   QString stream_key = stream_key_var.toString();
-  QString show_title = name_var.toString();
+  
+  ChewSetCurrentServerSettings(stream_url, stream_key);
+  
+  ChewSetVideoResolution(resX.toUInt(), resY.toUInt());
+  
+  ChewSetAudioVideoBitrate(audioBitrate.toUInt(), videoBitrate.toUInt());
   
   mChewStopUrl = stop_url_var.toString();
   
-  qDebug() << mChewStopUrl;
+  QString show_title = show_name_var.toString();
   
-  // create the custom settings for our two fields
+  
+  this->setWindowTitle("Chew Broadcaster | " + show_title);
+  this->ui->streamButton->setEnabled(true);
+  
+  // hide the webview
+  chewWindow->hide();
+  chewWindow->clearContent();
+}
+
+void OBSBasic::ChewSetCurrentServerSettings(const QString& server, const QString& key) {
   obs_data_t* settings = obs_data_create();
-  obs_data_set_string(settings, "server", QT_TO_UTF8(stream_url));
-  obs_data_set_string(settings, "key", QT_TO_UTF8(stream_key));
+  obs_data_set_string(settings, "server", QT_TO_UTF8(server));
+  obs_data_set_string(settings, "key", QT_TO_UTF8(key));
   
   obs_service_t *newService = obs_service_create(
         QT_TO_UTF8(QString("rtmp_custom"))
@@ -1187,13 +1225,30 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
 
 	SetService(newService);
 	SaveService();
-	obs_service_release(newService);
   
-  this->setWindowTitle("Chew Broadcaster | " + show_title);
-  this->ui->streamButton->setEnabled(true);
-  chewWindow->hide();
-  chewWindow->clearContent();
+	obs_service_release(newService);
+  obs_data_release(settings);
 }
+
+void OBSBasic::ChewSetVideoResolution(uint cx, uint cy) {
+  config_set_uint(Config(), "Video", "BaseCX", cx);
+  config_set_uint(Config(), "Video", "BaseCY", cy);
+  config_set_uint(Config(), "Video", "OutputCX", cx);
+  config_set_uint(Config(), "Video", "OutputCY", cy);
+}
+
+void OBSBasic::ChewSetAudioVideoBitrate(uint aBitrate, uint vBitrate) {
+  obs_data_t *videoSettings = obs_data_create();
+  obs_data_t *audioSettings = obs_data_create();
+  obs_data_set_int(videoSettings, "bitrate", vBitrate);
+  obs_data_set_int(audioSettings, "bitrate", aBitrate);
+
+  obs_service_apply_encoder_settings(GetService(), videoSettings, audioSettings);
+
+  obs_data_release(videoSettings);
+  obs_data_release(audioSettings);
+}
+
 
 void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
   // Opens a link in the default OS browser

@@ -303,6 +303,10 @@ private:
   void ChewShowSelectionHandler(const QVariant &params);
   void ChewOpenLinkHandler(const QVariant &params);
   void ChewLogoutHandler();
+  
+  void ChewSetCurrentServerSettings(const QString& server, const QString& key);
+  void ChewSetVideoResolution(uint x, uint y);
+  void ChewSetAudioVideoBitrate(uint aBitrate, uint vBitrate);
 private slots:
   void on_logoutButton_clicked();
   void on_selectShowButton_clicked();
