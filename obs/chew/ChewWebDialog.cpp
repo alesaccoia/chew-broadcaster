@@ -12,7 +12,7 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   this->setFixedSize(640, 480);
 
   mWebPage = new QWebEnginePage();
-  mErrorPage = new QWebEnginePage();
+  mRedirectorPage = new QWebEnginePage();
   mWebChannel = new QWebChannel();
   mWebView = new QWebEngineView(this);
 
@@ -20,13 +20,8 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebPage->setWebChannel(mWebChannel);
   mWebView->setPage(mWebPage);
   
-  QObject::connect(mWebPage, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-  
-  QString fullPath = QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/broadcaster-no-connection.html";
-  
-  qDebug() << fullPath;
-  
-  mErrorPage->load(QUrl::fromLocalFile(fullPath));
+  // alex todo: stringify this and include it in a string
+  redirectorPagePath = QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
 
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   this->setModal(true);
@@ -36,22 +31,6 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
 
 ChewWebDialog::~ChewWebDialog() {
   delete ui;
-}
-
-void ChewWebDialog::loadFinished(bool wasOk) {
-  if (wasOk) {
-    qDebug() << "Loading OK " << mLastUrl;
-    mWebView->setPage(mWebPage);
-    mWebView->resize(this->size());
-    mWebView->update();
-  } else {
-    qDebug() << "Error loading " << mLastUrl;
-    mWebView->setPage(mErrorPage);
-    mWebView->resize(this->size());
-    mWebView->update();
-    mReloadTimer.singleShot(2000, this, SLOT(reloadLastPage()));
-  }
-  update();
 }
 
 void ChewWebDialog::setupShortcuts() {
@@ -71,21 +50,25 @@ void ChewWebDialog::setupShortcuts() {
 // #endif
 }
 
-void ChewWebDialog::reloadLastPage() {
-  mWebPage->load(mLastUrl);
-  qDebug() << "Retrying loading " << mLastUrl;
+void ChewWebDialog::navigateToUrl(QUrl url) {
+  clearContent();
+  
+  mWebPage->load(url);
+  mWebView->setPage(mWebPage);
+  mWebView->resize(this->size());
+  mWebView->update();
 }
 
-
-void ChewWebDialog::navigateToUrl(QUrl url) {
-  if (mReloadTimer.isActive()) {
-    mReloadTimer.stop();
-  }
-  mLastUrl = url;
-
-  mWebView->setHtml("");
+void ChewWebDialog::navigateToUrlWithRedirect(QUrl url) {
+  clearContent();
+  
+  QString urlEncoded = url.encoded();
+  QString fullUrl = redirectorPagePath + "?url=" + url.url();
+  
+  mWebPage->load(QUrl(fullUrl));
+  mWebView->setPage(mWebPage);
+  mWebView->resize(this->size());
   mWebView->update();
-  mWebPage->load(url);
 }
 
 void ChewWebDialog::deleteCookies() {
@@ -93,6 +76,7 @@ void ChewWebDialog::deleteCookies() {
 }
 
 void ChewWebDialog::clearContent() {
-  mWebView->setHtml("<html><body></body></html>");
+  mWebView->setHtml("");
+  mWebView->update();
 }
 

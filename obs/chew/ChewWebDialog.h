@@ -19,30 +19,39 @@ public:
   explicit ChewWebDialog(QWidget *parent = 0);
   ~ChewWebDialog();
 
+  /// Navigates directly to the given URL
   void navigateToUrl(QUrl url);
+  
+  /**
+   * Uses the redirector.html page with AJAX to redirect to the wanted URL.
+   * We use mostly this one because it's impossible to get reliable 
+   * connection error reporting with QWebEnginePage
+   */
+  void navigateToUrlWithRedirect(QUrl url);
+  
+  /// Deletes the cookies from the application directory
   void deleteCookies();
+  
+  /// Clears the content of the webview setting it to nothing
   void clearContent();
 
+  /**
+   * Returns the WebChannel associated with this Dialog. Used to associate
+   * a proxy object
+   */
   QWebChannel* getWebChannel() { return mWebChannel; }
-
-private slots:
-  void loadFinished(bool wasOk);
-
-  // called by a timer that refreshes the page
-  void reloadLastPage();
   
 private:
 
-  // the webview doesn't listen to shortcuts "as is"
+  /// Sets up the shortcuts that aren't handled from the webview out of the box
   void setupShortcuts();
 
   Ui::ChewWebDialog *ui;
   QWebEnginePage* mWebPage;
   QWebEngineView* mWebView;
-  QWebEnginePage* mErrorPage;
   QWebChannel* mWebChannel;
-  QUrl mLastUrl;
-  QTimer mReloadTimer;
+  
+  QString redirectorPagePath;
 };
 
 #endif // CHEWWEBDIALOG_H
