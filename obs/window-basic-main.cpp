@@ -1093,7 +1093,7 @@ void OBSBasic::OBSInit()
   QObject::connect(chewJsProxy, &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
 
   chewWindow->setWindowTitle("Chew.tv");
-  chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
+  chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
   
 	QList<int> defSizes;
@@ -3828,18 +3828,18 @@ void OBSBasic::on_logoutButton_clicked() {
   chewWindow->setModal(true);
   this->hide();
   chewWindow->show();
-  chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
+  chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
 }
 
 void OBSBasic::on_selectShowButton_clicked() {
   if (!outputHandler->StreamingActive()) {
     chewWindow->show();
     chewWindow->setModal(true);
-    chewWindow->navigateToUrl(QUrl(CHEW_TV_SELECT_SHOW));
+    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
     chewWindow->show();
     chewWindow->setModal(false);
-    chewWindow->navigateToUrl(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
+    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
   }
 }
 

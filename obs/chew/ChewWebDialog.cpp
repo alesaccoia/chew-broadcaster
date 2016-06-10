@@ -12,12 +12,12 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   this->setFixedSize(640, 480);
 
   mWebPage = new QWebEnginePage();
-  mRedirectorPage = new QWebEnginePage();
   mWebChannel = new QWebChannel();
   mWebView = new QWebEngineView(this);
-
+  
   mWebPage->setView(mWebView);
   mWebPage->setWebChannel(mWebChannel);
+  mWebPage->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
   mWebView->setPage(mWebPage);
   
   // alex todo: stringify this and include it in a string
@@ -62,10 +62,9 @@ void ChewWebDialog::navigateToUrl(QUrl url) {
 void ChewWebDialog::navigateToUrlWithRedirect(QUrl url) {
   clearContent();
   
-  QString urlEncoded = url.encoded();
-  QString fullUrl = redirectorPagePath + "?url=" + url.url();
-  
+  QString fullUrl = "file://" + redirectorPagePath + "?url=" + url.toString();
   mWebPage->load(QUrl(fullUrl));
+  
   mWebView->setPage(mWebPage);
   mWebView->resize(this->size());
   mWebView->update();
