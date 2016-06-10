@@ -61,10 +61,27 @@
 #include <QScreen>
 #include <QWindow>
 
-#define CHEW_TV_LOGIN "https://chew.tv/_broadcaster/"
-#define CHEW_TV_SELECT_SHOW "https://chew.tv/_broadcaster/shows"
-#define CHEW_TV_EDIT_SHOW_START "https://chew.tv/_broadcaster/shows/"
+#define CHEW_STAGING 1
+
+#ifdef CHEW_STAGING
+
+#define CHEW_TV_LOGIN "https://staging.chew.tv/_broadcaster/"
+#define CHEW_TV_SELECT_SHOW "https://staging.chew.tv/_broadcaster/shows"
+#define CHEW_TV_EDIT_SHOW_START "https://staging.chew.tv/_broadcaster/shows/"
 #define CHEW_TV_EDIT_SHOW_END "/info"
+#define CHEW_TV_EDIT_KEY_SUFFIX ""
+
+#define SHOW_DEBUG_WINDOW chewWindow->navigateToUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/debug.html"));
+
+#else
+
+#define CHEW_TV_LOGIN "https://www.chew.tv/_broadcaster/"
+#define CHEW_TV_SELECT_SHOW "https://www.chew.tv/_broadcaster/shows"
+#define CHEW_TV_EDIT_SHOW_START "https://www.chew.tv/_broadcaster/shows/"
+#define CHEW_TV_EDIT_SHOW_END "/info"
+#define CHEW_TV_EDIT_KEY_SUFFIX "?platform=staging.chew.tv"
+
+#endif
 
 
 using namespace std;
@@ -1089,6 +1106,7 @@ void OBSBasic::OBSInit()
   chewJsProxy = new ChewHTMLProxy();
   
   ChewAssignProxyProperties();
+  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
   
   QObject::connect(chewJsProxy, &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
 
@@ -1133,35 +1151,46 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
 }
 
 void OBSBasic::ChewAssignProxyProperties() {
-  chewWindow->getWebChannel()->deregisterObject(chewJsProxy);
-  
   QVariantMap vrMap;
-  vrMap.insert("versionMajor", 1);
-  vrMap.insert("versionMinor", 0);
-  vrMap.insert("versionPatch", 0);
+  vrMap.insert("versionMajor", CHEW_VERSION_MAJOR);
+  vrMap.insert("versionMinor", CHEW_VERSION_MINOR);
+  vrMap.insert("versionPatch", CHEW_VERSION_PATCH);
   
   QVariantMap settingsMap;
   
   QVariantMap resolutionMap;
-  resolutionMap.insert("baseCX", 1280);
-  resolutionMap.insert("baseCY", 768);
-  resolutionMap.insert("outputCX", 1280);
-  resolutionMap.insert("outputCY", 768);
+  resolutionMap.insert("baseCX", (uint32_t)config_get_uint(basicConfig, "Video", "baseCX"));
+  resolutionMap.insert("baseCY", (uint32_t)config_get_uint(basicConfig, "Video", "baseCY"));
+  resolutionMap.insert("outputCX", (uint32_t)config_get_uint(basicConfig, "Video", "outputCX"));
+  resolutionMap.insert("outputCY", (uint32_t)config_get_uint(basicConfig, "Video", "outputCY"));
   settingsMap.insert("resolution", resolutionMap);
   
+  const char *mode = config_get_string(basicConfig, "Output", "Mode");
+	bool advOut = astrcmpi(mode, "Advanced") == 0;
+  
   QVariantMap bitrateMap;
-  bitrateMap.insert("video", 2500);
-  bitrateMap.insert("audio", 320);
+  uint32_t temp;
+  if (advOut)
+    temp = (uint32_t)config_get_uint(basicConfig, "AdvOut", "FFVBitrate");
+  else
+    temp = (uint32_t)config_get_uint(basicConfig, "SimpleOutput", "VBitrate");
+  bitrateMap.insert("video", temp);
+  
+  if (advOut)
+    temp = (uint32_t)config_get_uint(basicConfig, "AdvOut", "FFABitrate");
+  else
+    temp = (uint32_t)config_get_uint(basicConfig, "SimpleOutput", "ABitrate");
+  bitrateMap.insert("audio", temp);
+  
   settingsMap.insert("bitrate", bitrateMap);
   
-  settingsMap.insert("fps", 60);
+  obs_service_apply_encoder_settings
+  temp = (uint32_t)config_get_uint(basicConfig, "Video", "FPSCommon");
+  settingsMap.insert("fps", temp);
   
   vrMap.insert("settings", settingsMap);
   
-
   chewJsProxy->getProperties() = vrMap;
-  
-  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
 
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
@@ -1223,7 +1252,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   chew_check_and_return_variant(settingsMap, fps, "fps");
   
   QString stream_url = stream_url_var.toString();
-  QString stream_key = stream_key_var.toString();
+  QString stream_key = stream_key_var.toString() + CHEW_TV_EDIT_KEY_SUFFIX;
   
   ChewSetCurrentServerSettings(stream_url, stream_key);
   
@@ -1268,10 +1297,21 @@ void OBSBasic::ChewSetVideoSettings(uint baseCX, uint baseCY, uint outputCX, uin
   config_set_uint(Config(), "Video", "BaseCY", baseCY);
   config_set_uint(Config(), "Video", "OutputCX", outputCX);
   config_set_uint(Config(), "Video", "OutputCY", outputCY);
-  config_set_uint(Config(), "Video", "CommonFPS", fps);
+  config_set_uint(Config(), "Video", "FPSCommon", fps);
 }
 
 void OBSBasic::ChewSetBitrates(uint aBitrate, uint vBitrate) {
+  const char *mode = config_get_string(basicConfig, "Output", "Mode");
+	bool advOut = astrcmpi(mode, "Advanced") == 0;
+  
+  if (advOut) {
+    config_set_uint(basicConfig, "AdvOut", "FFVBitrate", vBitrate);
+    config_set_uint(basicConfig, "AdvOut", "FFABitrate", aBitrate);
+  } else {
+    config_set_uint(basicConfig, "SimpleOutput", "VBitrate", vBitrate);
+    config_set_uint(basicConfig, "SimpleOutput", "ABitrate", aBitrate);
+  }
+  
   obs_data_t *videoSettings = obs_data_create();
   obs_data_t *audioSettings = obs_data_create();
   obs_data_set_int(videoSettings, "bitrate", vBitrate);
@@ -3825,6 +3865,8 @@ void OBSBasic::on_settingsButton_clicked()
 
 void OBSBasic::on_logoutButton_clicked() {
   chewWindow->deleteCookies();
+  
+  ChewAssignProxyProperties();
   chewWindow->setModal(true);
   this->hide();
   chewWindow->show();
@@ -3833,10 +3875,12 @@ void OBSBasic::on_logoutButton_clicked() {
 
 void OBSBasic::on_selectShowButton_clicked() {
   if (!outputHandler->StreamingActive()) {
+    ChewAssignProxyProperties();
     chewWindow->show();
     chewWindow->setModal(true);
     chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
+    ChewAssignProxyProperties();
     chewWindow->show();
     chewWindow->setModal(false);
     chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));

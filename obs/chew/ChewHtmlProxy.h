@@ -12,7 +12,7 @@ public:
   explicit ChewHTMLProxy(QObject *parent = 0);
 
   // exposed on the Javascript side
-  Q_PROPERTY(QVariant properties MEMBER mProperties CONSTANT)
+  Q_PROPERTY(QVariant properties MEMBER mProperties NOTIFY propertiesChanged)
   
   // returns the properties object in order to populate it
   QVariant& getProperties();
@@ -22,6 +22,9 @@ public:
   
 signals:
   void executeJs(const QString &method, const QVariant &params);
+  
+signals:
+	void propertiesChanged(const QVariant&);
 
 public slots:
   /** This slot is invoked from JS, executes the C++ implementation.

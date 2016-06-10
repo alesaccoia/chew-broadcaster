@@ -21,7 +21,7 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebView->setPage(mWebPage);
   
   // alex todo: stringify this and include it in a string
-  redirectorPagePath = QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
+  redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
 
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   this->setModal(true);
@@ -62,7 +62,7 @@ void ChewWebDialog::navigateToUrl(QUrl url) {
 void ChewWebDialog::navigateToUrlWithRedirect(QUrl url) {
   clearContent();
   
-  QString fullUrl = "file://" + redirectorPagePath + "?url=" + url.toString();
+  QString fullUrl = redirectorPagePath + "?url=" + url.toString();
   mWebPage->load(QUrl(fullUrl));
   
   mWebView->setPage(mWebPage);

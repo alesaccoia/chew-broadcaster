@@ -302,7 +302,7 @@ private:
   // callback for anything that arrives from the webview
   void ChewWebViewHandler(const QString &method, const QVariant &params);
   
-  // populates the chewApp.properties JS object exposed to the WebView
+  // creates the chewApp.properties JS object exposed to the WebView
   void ChewAssignProxyProperties();
   
   void ChewAuthenticationHandler(const QVariant &params);
