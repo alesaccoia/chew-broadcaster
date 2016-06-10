@@ -1096,12 +1096,6 @@ void OBSBasic::OBSInit()
   chewWindow->navigateToUrl(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
   
-
-
-//#ifndef _WIN32
-//	show();
-//#endif
-
 	QList<int> defSizes;
 
 	int top = config_get_int(App()->GlobalConfig(), "BasicWindow",

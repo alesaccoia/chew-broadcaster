@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QtWebEngineWidgets>
 #include <QWebChannel>
+#include <QUrl>
+#include <QTimer>
 
 namespace Ui {
 class ChewWebDialog;
@@ -23,6 +25,12 @@ public:
 
   QWebChannel* getWebChannel() { return mWebChannel; }
 
+private slots:
+  void loadFinished(bool wasOk);
+
+  // called by a timer that refreshes the page
+  void reloadLastPage();
+  
 private:
 
   // the webview doesn't listen to shortcuts "as is"
@@ -31,7 +39,10 @@ private:
   Ui::ChewWebDialog *ui;
   QWebEnginePage* mWebPage;
   QWebEngineView* mWebView;
+  QWebEnginePage* mErrorPage;
   QWebChannel* mWebChannel;
+  QUrl mLastUrl;
+  QTimer mReloadTimer;
 };
 
 #endif // CHEWWEBDIALOG_H

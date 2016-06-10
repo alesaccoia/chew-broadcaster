@@ -12,12 +12,21 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   this->setFixedSize(640, 480);
 
   mWebPage = new QWebEnginePage();
+  mErrorPage = new QWebEnginePage();
   mWebChannel = new QWebChannel();
   mWebView = new QWebEngineView(this);
 
   mWebPage->setView(mWebView);
   mWebPage->setWebChannel(mWebChannel);
   mWebView->setPage(mWebPage);
+  
+  QObject::connect(mWebPage, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
+  
+  QString fullPath = QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/broadcaster-no-connection.html";
+  
+  qDebug() << fullPath;
+  
+  mErrorPage->load(QUrl::fromLocalFile(fullPath));
 
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   this->setModal(true);
@@ -25,9 +34,24 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   setupShortcuts();
 }
 
-ChewWebDialog::~ChewWebDialog()
-{
+ChewWebDialog::~ChewWebDialog() {
   delete ui;
+}
+
+void ChewWebDialog::loadFinished(bool wasOk) {
+  if (wasOk) {
+    qDebug() << "Loading OK " << mLastUrl;
+    mWebView->setPage(mWebPage);
+    mWebView->resize(this->size());
+    mWebView->update();
+  } else {
+    qDebug() << "Error loading " << mLastUrl;
+    mWebView->setPage(mErrorPage);
+    mWebView->resize(this->size());
+    mWebView->update();
+    mReloadTimer.singleShot(2000, this, SLOT(reloadLastPage()));
+  }
+  update();
 }
 
 void ChewWebDialog::setupShortcuts() {
@@ -47,14 +71,21 @@ void ChewWebDialog::setupShortcuts() {
 // #endif
 }
 
+void ChewWebDialog::reloadLastPage() {
+  mWebPage->load(mLastUrl);
+  qDebug() << "Retrying loading " << mLastUrl;
+}
+
 
 void ChewWebDialog::navigateToUrl(QUrl url) {
+  if (mReloadTimer.isActive()) {
+    mReloadTimer.stop();
+  }
+  mLastUrl = url;
+
   mWebView->setHtml("");
   mWebView->update();
   mWebPage->load(url);
-  mWebView->setPage(mWebPage);
-  mWebView->resize(this->size());
-  update();
 }
 
 void ChewWebDialog::deleteCookies() {

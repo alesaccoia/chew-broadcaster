@@ -12,7 +12,7 @@ public:
   explicit ChewHTMLProxy(QObject *parent = 0);
 
   // exposed on the Javascript side
-  Q_PROPERTY(QVariant properties MEMBER mProperties)
+  Q_PROPERTY(QVariant properties MEMBER mProperties CONSTANT)
   
   // returns the properties object in order to populate it
   QVariant& getProperties();
