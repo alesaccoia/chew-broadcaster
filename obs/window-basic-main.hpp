@@ -96,7 +96,8 @@ private:
   enum {
     kChewLoggedOut,
     kChewLoggedIn,
-    kChewShowSelected
+    kChewShowSelected,
+    kChewStreaming,
   } mChewConnectionState;
   
 	QPointer<ChewWebDialog>        chewWindow;
@@ -309,6 +310,7 @@ private:
   void ChewShowSelectionHandler(const QVariant &params);
   void ChewOpenLinkHandler(const QVariant &params);
   void ChewLogoutHandler();
+  bool ChewDialogWantsToClose();
   
   void ChewSetCurrentServerSettings(const QString& server, const QString& key);
   void ChewSetVideoSettings(uint baseCX, uint baseCY, uint outputCX, uint outputCY, float fps);

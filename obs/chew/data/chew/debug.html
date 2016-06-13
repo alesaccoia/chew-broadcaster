@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chew.tv login</title>
+	<meta name="description" content="Chew.tv object debug page" />
+
+	<!-- Load QT JS -> C++ "bridge" -->
+	<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+	<!-- JQuery -->
+	<script type="text/javascript" src="jquery-1.12.4.min.js"></script>
+
+</head>
+<body>
+  <div id="dumpObject">
+  </div>
+</body>
+
+<script type="text/javascript">
+  var chewApp;
+  $(function() {
+    new QWebChannel(qt.webChannelTransport, function (channel) {
+      chewApp = channel.objects.app;
+      str = JSON.stringify(chewApp, null, 4); // (Optional) beautiful indented output.
+      console.log(str); // Logs output to dev tools console.
+      $('#dumpObject').html(str);
+    });
+  });
+
+</script>
+</html>

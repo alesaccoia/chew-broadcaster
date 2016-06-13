@@ -68,8 +68,8 @@
 #define CHEW_TV_LOGIN "https://staging.chew.tv/_broadcaster/"
 #define CHEW_TV_SELECT_SHOW "https://staging.chew.tv/_broadcaster/shows"
 #define CHEW_TV_EDIT_SHOW_START "https://staging.chew.tv/_broadcaster/shows/"
-#define CHEW_TV_EDIT_SHOW_END "/info"
-#define CHEW_TV_EDIT_KEY_SUFFIX ""
+#define CHEW_TV_EDIT_SHOW_END "/edit"
+#define CHEW_TV_EDIT_KEY_SUFFIX "?platform=staging.chew.tv"
 
 #define SHOW_DEBUG_WINDOW chewWindow->navigateToUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/debug.html"));
 
@@ -78,8 +78,8 @@
 #define CHEW_TV_LOGIN "https://www.chew.tv/_broadcaster/"
 #define CHEW_TV_SELECT_SHOW "https://www.chew.tv/_broadcaster/shows"
 #define CHEW_TV_EDIT_SHOW_START "https://www.chew.tv/_broadcaster/shows/"
-#define CHEW_TV_EDIT_SHOW_END "/info"
-#define CHEW_TV_EDIT_KEY_SUFFIX "?platform=staging.chew.tv"
+#define CHEW_TV_EDIT_SHOW_END "/edit"
+#define CHEW_TV_EDIT_KEY_SUFFIX ""
 
 #endif
 
@@ -1103,13 +1103,18 @@ void OBSBasic::OBSInit()
 	}
   
   chewWindow = new ChewWebDialog();
+  mChewConnectionState = kChewLoggedOut;
+  
+  QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
+  
   chewJsProxy = new ChewHTMLProxy();
   
   ChewAssignProxyProperties();
   chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
   
+  this->show();
+  
   QObject::connect(chewJsProxy, &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
-
   chewWindow->setWindowTitle("Chew.tv");
   chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
@@ -1134,6 +1139,22 @@ void OBSBasic::OBSInit()
 	ui->mainSplitter->setSizes(defSizes);
 }
 
+// this handles pressing the close button on the modal Chew dialog
+bool OBSBasic::ChewDialogWantsToClose() {
+  switch(mChewConnectionState) {
+    case kChewLoggedOut:
+      this->close();
+      break;
+    case kChewStreaming:
+    case kChewLoggedIn:
+    case kChewShowSelected: // closing the select window
+    default:
+         break;
+    
+  }
+  return true;
+}
+
 void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params) {
   QVariantMap paramsMap = params.toMap();
   if (method == "authenticated") {
@@ -1141,7 +1162,7 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
   } else if (method == "selectShow") {
     ChewShowSelectionHandler(params);
   } else if (method == "editShow") {
-    chewWindow->hide();
+    chewWindow->close();
   } else if (method == "open") {
     ChewOpenLinkHandler(params);
   } else {
@@ -1184,7 +1205,6 @@ void OBSBasic::ChewAssignProxyProperties() {
   
   settingsMap.insert("bitrate", bitrateMap);
   
-  obs_service_apply_encoder_settings
   temp = (uint32_t)config_get_uint(basicConfig, "Video", "FPSCommon");
   settingsMap.insert("fps", temp);
   
@@ -1206,10 +1226,10 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   qDebug() << "Logged in as " << userName;
   
   mChewConnectionState = kChewLoggedIn;
-  chewWindow->hide();
-  chewWindow->clearContent();
+  chewWindow->close();
   this->show();
   this->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
+  mChewConnectionState = kChewLoggedIn;
 }
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
@@ -1269,9 +1289,10 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   this->setWindowTitle("Chew Broadcaster | " + show_title);
   this->ui->streamButton->setEnabled(true);
   
-  // hide the webview
-  chewWindow->hide();
-  chewWindow->clearContent();
+  // close the webview
+  chewWindow->close();
+  
+  mChewConnectionState = kChewShowSelected;
 }
 
 void OBSBasic::ChewSetCurrentServerSettings(const QString& server, const QString& key) {
@@ -1311,7 +1332,6 @@ void OBSBasic::ChewSetBitrates(uint aBitrate, uint vBitrate) {
     config_set_uint(basicConfig, "SimpleOutput", "VBitrate", vBitrate);
     config_set_uint(basicConfig, "SimpleOutput", "ABitrate", aBitrate);
   }
-  
   obs_data_t *videoSettings = obs_data_create();
   obs_data_t *audioSettings = obs_data_create();
   obs_data_set_int(videoSettings, "bitrate", vBitrate);
@@ -1335,7 +1355,7 @@ void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
 }
 
 void OBSBasic::ChewLogoutHandler() {
-
+  
 }
 
 void OBSBasic::InitHotkeys()
@@ -3620,6 +3640,10 @@ void OBSBasic::StreamDelayStarting(int sec)
 {
 	ui->streamButton->setText(QTStr("Basic.Main.StopStreaming"));
 	ui->streamButton->setEnabled(true);
+  
+  ui->selectShowButton->setEnabled(true);
+  ui->selectShowButton->setText("Edit Show Info");
+  
 
 	if (!startStreamMenu.isNull())
 		startStreamMenu->deleteLater();
@@ -3643,6 +3667,8 @@ void OBSBasic::StreamDelayStopping(int sec)
 {
 	ui->streamButton->setText(QTStr("Basic.Main.StartStreaming"));
 	ui->streamButton->setEnabled(true);
+  
+  ui->logoutButton->setEnabled(true);
 
 	if (!startStreamMenu.isNull())
 		startStreamMenu->deleteLater();
@@ -3662,6 +3688,10 @@ void OBSBasic::StreamingStart()
 	ui->streamButton->setText(QTStr("Basic.Main.StopStreaming"));
 	ui->streamButton->setEnabled(true);
 	ui->statusbar->StreamStarted(outputHandler->streamOutput);
+  
+  ui->selectShowButton->setEnabled(true);
+  ui->selectShowButton->setText("Edit Show Info");
+  ui->logoutButton->setEnabled(false);
 
 	if (ui->profileMenu->isEnabled()) {
 		ui->profileMenu->setEnabled(false);
@@ -3832,8 +3862,7 @@ void OBSBasic::on_streamButton_clicked()
 				return;
 		}
     
-    ui->selectShowButton->setText("Edit Show Info");
-    
+    ui->selectShowButton->setEnabled(false);
     ui->logoutButton->setEnabled(false);
 
 		StartStreaming();
@@ -3865,10 +3894,13 @@ void OBSBasic::on_settingsButton_clicked()
 
 void OBSBasic::on_logoutButton_clicked() {
   chewWindow->deleteCookies();
-  
   ChewAssignProxyProperties();
   chewWindow->setModal(true);
   this->hide();
+  mChewConnectionState = kChewLoggedOut;
+  
+  chewWindow = new ChewWebDialog();
+  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
   chewWindow->show();
   chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
 }
@@ -3876,11 +3908,15 @@ void OBSBasic::on_logoutButton_clicked() {
 void OBSBasic::on_selectShowButton_clicked() {
   if (!outputHandler->StreamingActive()) {
     ChewAssignProxyProperties();
+    chewWindow = new ChewWebDialog();
+    chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
     chewWindow->show();
     chewWindow->setModal(true);
     chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
     ChewAssignProxyProperties();
+    chewWindow = new ChewWebDialog();
+    chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
     chewWindow->show();
     chewWindow->setModal(false);
     chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
