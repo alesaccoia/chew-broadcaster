@@ -10,6 +10,7 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   ui->setupUi(this);
 
   this->setFixedSize(640, 480);
+  this->setAttribute(Qt::WA_DeleteOnClose);
 
   mWebPage = new QWebEnginePage();
   mWebChannel = new QWebChannel();
@@ -22,7 +23,8 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   
   // alex todo: stringify this and include it in a string
   redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
-
+  //redirectorPagePath = "file:///Volumes/Data/GoogleDrive/alsc.co/Clients/chew.tv/Chew Studio/graphics/html/redirector.html";
+  //redirectorPagePath = "/Volumes/Data/WORK/alsc/Projects/chewtv/chew-studio/obs/chew/data/chew/redirector.html";
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
   this->setModal(true);
 
@@ -79,3 +81,7 @@ void ChewWebDialog::clearContent() {
   mWebView->update();
 }
 
+void ChewWebDialog::reject() {
+  bool shouldClose = emit wantsToClose();
+  if (shouldClose) QDialog::reject();
+}

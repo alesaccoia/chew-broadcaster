@@ -40,11 +40,20 @@ public:
    * a proxy object
    */
   QWebChannel* getWebChannel() { return mWebChannel; }
-  
+
+signals:
+  /*
+   * The user code can return a bool preventing the window from closing
+   */
+  bool wantsToClose();
+
 private:
 
   /// Sets up the shortcuts that aren't handled from the webview out of the box
   void setupShortcuts();
+
+  /// Called when the X button is pressed
+  void reject();
 
   Ui::ChewWebDialog *ui;
   QWebEnginePage* mWebPage;
