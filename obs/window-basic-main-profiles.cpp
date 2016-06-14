@@ -30,7 +30,7 @@ template <typename Func> static void EnumProfiles(Func &&cb)
 	os_glob_t *glob;
 
 	int ret = GetConfigPath(path, sizeof(path),
-			"obs-studio/basic/profiles/*");
+			"chew-broadcaster/basic/profiles/*");
 	if (ret <= 0) {
 		blog(LOG_WARNING, "Failed to get profiles config path");
 		return;
@@ -121,7 +121,7 @@ static bool GetProfileName(QWidget *parent, std::string &name,
 		return false;
 	}
 
-	ret = GetConfigPath(path, sizeof(path), "obs-studio/basic/profiles/");
+	ret = GetConfigPath(path, sizeof(path), "chew-broadcaster/basic/profiles/");
 	if (ret <= 0) {
 		blog(LOG_WARNING, "Failed to get profiles config path");
 		return false;
@@ -145,7 +145,7 @@ static bool CopyProfile(const char *fromPartial, const char *to)
 	char path[512];
 	int ret;
 
-	ret = GetConfigPath(path, sizeof(path), "obs-studio/basic/profiles/");
+	ret = GetConfigPath(path, sizeof(path), "chew-broadcaster/basic/profiles/");
 	if (ret <= 0) {
 		blog(LOG_WARNING, "Failed to get profiles config path");
 		return false;
@@ -194,7 +194,7 @@ bool OBSBasic::AddProfile(bool create_new, const char *title, const char *text,
 			"Basic", "ProfileDir");
 
 	char newPath[512];
-	int ret = GetConfigPath(newPath, 512, "obs-studio/basic/profiles/");
+	int ret = GetConfigPath(newPath, 512, "chew-broadcaster/basic/profiles/");
 	if (ret <= 0) {
 		blog(LOG_WARNING, "Failed to get profiles config path");
 		return false;
@@ -247,7 +247,7 @@ void OBSBasic::DeleteProfile(const char *profileName, const char *profileDir)
 	char profilePath[512];
 	char basePath[512];
 
-	int ret = GetConfigPath(basePath, 512, "obs-studio/basic/profiles");
+	int ret = GetConfigPath(basePath, 512, "chew-broadcaster/basic/profiles");
 	if (ret <= 0) {
 		blog(LOG_WARNING, "Failed to get profiles config path");
 		return;
