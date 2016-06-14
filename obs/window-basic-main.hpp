@@ -319,6 +319,8 @@ private slots:
   void on_logoutButton_clicked();
   void on_selectShowButton_clicked();
   void NetworkErrorOnStopStreaming(QNetworkReply::NetworkError code);
+  
+  void deleteAndRecreateChewView(bool modality_);
 
 public slots:
 	void StartStreaming();

@@ -21,11 +21,8 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   
   mWebView->setPage(mWebPage);
   
-  // alex todo: stringify this and include it in a string
   redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirectorSam.html";
-  //redirectorPagePath = "file:///Volumes/Data/GoogleDrive/alsc.co/Clients/chew.tv/Chew Studio/graphics/html/redirector.html";
-  //redirectorPagePath = "/Volumes/Data/WORK/alsc/Projects/chewtv/chew-studio/obs/chew/data/chew/redirector.html";
-  //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+  
   this->setModal(true);
 
   setupShortcuts();

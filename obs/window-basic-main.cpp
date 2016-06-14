@@ -3896,29 +3896,34 @@ void OBSBasic::on_settingsButton_clicked()
 void OBSBasic::on_logoutButton_clicked() {
   chewWindow->deleteCookies();
   ChewAssignProxyProperties();
-  chewWindow->setModal(true);
-  this->hide();
+  
   mChewConnectionState = kChewLoggedOut;
   
-  chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
+  deleteAndRecreateChewView(true);
+  this->hide();
   chewWindow->show();
+  chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
+}
+
+void OBSBasic::deleteAndRecreateChewView(bool modality_) {
+  delete chewWindow;
+  chewWindow = new ChewWebDialog();
+  chewWindow->setModal(modality_);
+  QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
+  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
 
 void OBSBasic::on_selectShowButton_clicked() {
-  delete chewWindow;
-  chewWindow = new ChewWebDialog();
-  QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
-  ChewAssignProxyProperties();
-  chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
+  deleteAndRecreateChewView(true);
   
   if (!outputHandler->StreamingActive()) {
     chewWindow->setModal(true);
-    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
     chewWindow->show();
+    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
     chewWindow->setModal(false);
-    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
     chewWindow->show();
+    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
   }
 }
 
