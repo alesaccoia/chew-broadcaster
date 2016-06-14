@@ -100,7 +100,7 @@ private:
     kChewStreaming,
   } mChewConnectionState;
   
-	QPointer<ChewWebDialog>        chewWindow;
+	ChewWebDialog*        chewWindow;
 	QPointer<ChewHTMLProxy>        chewJsProxy;
   
   QString mChewShowId;
@@ -298,7 +298,7 @@ private:
   
   // Chew.tv extras
   
-	inline ChewWebDialog *GetChewWindow() const {return chewWindow.data();}
+	inline ChewWebDialog *GetChewWindow() const {return chewWindow;}
     
   // callback for anything that arrives from the webview
   void ChewWebViewHandler(const QString &method, const QVariant &params);

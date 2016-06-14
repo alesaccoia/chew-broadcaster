@@ -5,12 +5,11 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   : QDialog(parent)
   , ui(new Ui::ChewWebDialog)
 {
-
-  qputenv("QTWEBENGINE_REMOTE_DEBUGGING", "23654");
+  qputenv("QTWEBENGINE_REMOTE_DEBUGGING", "23655");
   ui->setupUi(this);
 
   this->setFixedSize(640, 480);
-  this->setAttribute(Qt::WA_DeleteOnClose);
+  this->setAttribute(Qt::WA_DeleteOnClose, false);
 
   mWebPage = new QWebEnginePage();
   mWebChannel = new QWebChannel();
@@ -19,10 +18,11 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   mWebPage->setView(mWebView);
   mWebPage->setWebChannel(mWebChannel);
   mWebPage->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
+  
   mWebView->setPage(mWebPage);
   
   // alex todo: stringify this and include it in a string
-  redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
+  redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirectorSam.html";
   //redirectorPagePath = "file:///Volumes/Data/GoogleDrive/alsc.co/Clients/chew.tv/Chew Studio/graphics/html/redirector.html";
   //redirectorPagePath = "/Volumes/Data/WORK/alsc/Projects/chewtv/chew-studio/obs/chew/data/chew/redirector.html";
   //this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
