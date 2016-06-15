@@ -1095,6 +1095,8 @@ void OBSBasic::OBSInit()
 //	show();
 //#endif
 
+  connect(App(), &QApplication::focusChanged, this, &OBSBasic::OnAppFocusChanged);
+
 	bool alwaysOnTop = config_get_bool(App()->GlobalConfig(), "BasicWindow",
 			"AlwaysOnTop");
 	if (alwaysOnTop) {
@@ -1134,6 +1136,22 @@ void OBSBasic::OBSInit()
 	}
 
 	ui->mainSplitter->setSizes(defSizes);
+}
+
+void OBSBasic::OnAppFocusChanged(QWidget* old, QWidget* now) {
+  int i = 0;
+  if (NULL == old) {
+    //Focus regained..This is foreground app now
+    chewWindow->update();
+    qDebug() << "Update called";
+    if (chewWindow->isVisible()) {
+      chewWindow->setFocus();
+    }
+    i=1;
+  } else if(NULL == now) {
+    //Focus lost. This is background app now.
+    i = 2;
+  }
 }
 
 // this handles pressing the close button on the modal Chew dialog

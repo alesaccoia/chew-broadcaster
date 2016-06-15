@@ -321,6 +321,8 @@ private slots:
   void NetworkErrorOnStopStreaming(QNetworkReply::NetworkError code);
   
   void deleteAndRecreateChewView(bool modality_);
+  
+  void OnAppFocusChanged(QWidget* old, QWidget* now);
 
 public slots:
 	void StartStreaming();
