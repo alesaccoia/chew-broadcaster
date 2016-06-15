@@ -1141,16 +1141,15 @@ void OBSBasic::OBSInit()
 void OBSBasic::OnAppFocusChanged(QWidget* old, QWidget* now) {
   int i = 0;
   if (NULL == old) {
-    //Focus regained..This is foreground app now
+    qDebug() << "Focus regained";
     chewWindow->update();
-    qDebug() << "Update called";
     if (chewWindow->isVisible()) {
       chewWindow->setFocus();
     }
-    i=1;
   } else if(NULL == now) {
-    //Focus lost. This is background app now.
-    i = 2;
+    qDebug() << "Focus lost";
+  } else {
+    qDebug() << "Focus change";
   }
 }
 
