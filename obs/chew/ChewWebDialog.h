@@ -11,6 +11,8 @@ namespace Ui {
 class ChewWebDialog;
 }
 
+class FocusWidget;
+
 class ChewWebDialog : public QDialog
 {
   Q_OBJECT
@@ -56,11 +58,33 @@ private:
   void reject();
 
   Ui::ChewWebDialog *ui;
+  FocusWidget* focusWidget;
   QWebEnginePage* mWebPage;
   QWebEngineView* mWebView;
   QWebChannel* mWebChannel;
   
   QString redirectorPagePath;
+};
+
+class QFocusEvent;
+
+class FocusWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit FocusWidget(QWidget *parent = 0);
+    void setChildWidget(QWidget *child);
+
+protected:
+    void focusInEvent(QFocusEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    QSize sizeHint() const;
+
+private slots:
+    void onFocusChanged(QWidget *old, QWidget *now);
+
+protected:
+    QWidget *childWidget;
 };
 
 #endif // CHEWWEBDIALOG_H

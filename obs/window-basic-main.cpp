@@ -1105,6 +1105,7 @@ void OBSBasic::OBSInit()
 	}
   
   chewWindow = new ChewWebDialog();
+  chewWindow->setModal(true);
   mChewConnectionState = kChewLoggedOut;
   
   QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
@@ -1143,13 +1144,17 @@ void OBSBasic::OnAppFocusChanged(QWidget* old, QWidget* now) {
   if (NULL == old) {
     qDebug() << "Focus regained";
     chewWindow->update();
-    if (chewWindow->isVisible()) {
-      chewWindow->setFocus();
-    }
+//    if (chewWindow->isVisible()) {
+//      chewWindow->setFocus();
+//    }
   } else if(NULL == now) {
     qDebug() << "Focus lost";
   } else {
     qDebug() << "Focus change";
+//    if (chewWindow->isVisible()) {
+//      chewWindow->update();
+//      chewWindow->setFocus();
+//    }
   }
 }
 
@@ -3919,13 +3924,14 @@ void OBSBasic::on_logoutButton_clicked() {
   deleteAndRecreateChewView(true);
   this->hide();
   chewWindow->show();
+  chewWindow->setModal(true);
   chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
 }
 
 void OBSBasic::deleteAndRecreateChewView(bool modality_) {
   delete chewWindow;
   chewWindow = new ChewWebDialog();
-  chewWindow->setModal(modality_);
+  //chewWindow->setModal(modality_);
   QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
   chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
@@ -3934,8 +3940,9 @@ void OBSBasic::on_selectShowButton_clicked() {
   deleteAndRecreateChewView(true);
   
   if (!outputHandler->StreamingActive()) {
-    chewWindow->setModal(true);
+    //chewWindow->setModal(true);
     chewWindow->show();
+    App()->setActiveWindow(chewWindow);
     chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_SELECT_SHOW));
   } else {
     chewWindow->setModal(false);
