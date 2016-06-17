@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIconFile</key>
-	<string>Chew Broadcaster.icns</string>
+	<string>Chew.icns</string>
 	<key>CFBundleName</key>
 	<string>Chew Broadcaster</string>
 	<key>CFBundleGetInfoString</key>
