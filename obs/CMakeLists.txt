@@ -32,13 +32,14 @@ endif()
 find_package(Qt5Widgets ${FIND_MODE})
 
 # On mac, these are all located in /usr/local/opt/qt5/lib/cmake
-# These are all packages related to Chew Webview
+# These are all packages related to Chew Webview, including the helper process QtWebEngineProcess
 find_package(Qt5WebEngine ${FIND_MODE})
 find_package(Qt5WebEngineWidgets ${FIND_MODE})
 find_package(Qt5Network ${FIND_MODE})
 find_package(Qt5WebChannel ${FIND_MODE})
+find_package(Qt5Quick ${FIND_MODE})
 
-if(NOT (Qt5Widgets_FOUND AND Qt5WebEngine_FOUND AND Qt5WebEngineWidgets_FOUND AND Qt5Network_FOUND AND Qt5WebChannel_FOUND))
+if(NOT (Qt5Widgets_FOUND AND Qt5WebEngine_FOUND AND Qt5WebEngineWidgets_FOUND AND Qt5Network_FOUND AND Qt5WebChannel_FOUND AND Qt5Quick_FOUND))
 	if (ENABLE_UI)
 		message(FATAL_ERROR "Qt5 not found, or some of its modules")
 	else()
@@ -246,6 +247,7 @@ target_link_libraries(obs
 	Qt5::WebEngineWidgets
 	Qt5::WebChannel
 	Qt5::Network
+	Qt5::Quick
 	${LIBCURL_LIBRARIES}
 	${obs_PLATFORM_LIBRARIES})
 
