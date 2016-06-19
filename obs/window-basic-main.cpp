@@ -1104,6 +1104,8 @@ void OBSBasic::OBSInit()
 		ui->actionAlwaysOnTop->setChecked(true);
 	}
   
+  setMenusEnabled(false);
+  
   chewWindow = new ChewWebDialog();
   chewWindow->setModal(true);
   mChewConnectionState = kChewLoggedOut;
@@ -1248,6 +1250,8 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   chewWindow->hide();
   this->show();
   this->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
+  setMenusEnabled(true);
+
   mChewConnectionState = kChewLoggedIn;
 }
 
@@ -3925,7 +3929,20 @@ void OBSBasic::on_logoutButton_clicked() {
   this->hide();
   chewWindow->show();
   chewWindow->setModal(true);
+  
+  setMenusEnabled(false);
+
   chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
+}
+
+void OBSBasic::setMenusEnabled(bool enable_) {
+  this->ui->menu_File->setEnabled(enable_);
+  this->ui->menuBasic_MainMenu_Help->setEnabled(enable_);
+  this->ui->menuBasic_MainMenu_Edit->setEnabled(enable_);
+  this->ui->orderMenu->setEnabled(enable_);
+  this->ui->profileMenu->setEnabled(enable_);
+  this->ui->sceneCollectionMenu->setEnabled(enable_);
+  this->ui->sceneCollectionMenu->setEnabled(enable_);
 }
 
 void OBSBasic::deleteAndRecreateChewView(bool modality_) {

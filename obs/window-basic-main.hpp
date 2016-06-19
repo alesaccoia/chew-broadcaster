@@ -323,6 +323,7 @@ private slots:
   void deleteAndRecreateChewView(bool modality_);
   
   void OnAppFocusChanged(QWidget* old, QWidget* now);
+  void setMenusEnabled(bool enable_);
 
 public slots:
 	void StartStreaming();
