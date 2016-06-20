@@ -344,8 +344,6 @@ public slots:
 
 	void SaveProjectDeferred();
 	void SaveProject();
-  
-  void ChewShowChosen();
 
 private slots:
 	void AddSceneItem(OBSSceneItem item);

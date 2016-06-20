@@ -43,6 +43,7 @@ SynchronousRequestWithTimeout::SynchronousRequestWithTimeout(const QUrl& url, Re
 bool SynchronousRequestWithTimeout::run() {
   QNetworkAccessManager *manager = new QNetworkAccessManager(this);
   QNetworkRequest request(mUrl);
+  request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("text/html; charset=utf-8"));
   QByteArray data;
   QNetworkReply *reply = (mMethod == GET) ? manager->get(request) : manager->post(request, data);
   

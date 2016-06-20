@@ -1142,21 +1142,12 @@ void OBSBasic::OBSInit()
 }
 
 void OBSBasic::OnAppFocusChanged(QWidget* old, QWidget* now) {
-  int i = 0;
   if (NULL == old) {
-    qDebug() << "Focus regained";
     chewWindow->update();
-//    if (chewWindow->isVisible()) {
-//      chewWindow->setFocus();
-//    }
   } else if(NULL == now) {
-    qDebug() << "Focus lost";
+    ;
   } else {
-    qDebug() << "Focus change";
-//    if (chewWindow->isVisible()) {
-//      chewWindow->update();
-//      chewWindow->setFocus();
-//    }
+    ;
   }
 }
 
@@ -1244,7 +1235,7 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   chew_check_and_return_variant(paramsAsMap, nameVar, "name");
   
   QString userName = nameVar.toString();
-  qDebug() << "Logged in as " << userName;
+  qInfo() << "Logged in as " << userName;
   
   mChewConnectionState = kChewLoggedIn;
   chewWindow->hide();
@@ -1303,7 +1294,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   
   ChewSetBitrates(audioBitrate.toUInt(), videoBitrate.toUInt());
   
-  mChewShowId = id_var.toInt();
+  mChewShowId = id_var.toString();
   mChewStopUrl = stop_url_var.toString();
   
   QString show_title = show_name_var.toString();
@@ -3629,6 +3620,8 @@ void OBSBasic::StartStreaming()
 
 	if (!outputHandler->StartStreaming(service)) {
 		ui->streamButton->setText(QTStr("Basic.Main.StartStreaming"));
+    ui->selectShowButton->setEnabled(false);
+    ui->logoutButton->setEnabled(false);
 		ui->streamButton->setEnabled(true);
 	}
 }
@@ -3856,7 +3849,7 @@ void OBSBasic::on_streamButton_clicked()
     
     
     // synchronous call
-    chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::GET);
+    chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST);
     
     if (!sr.run()) {
       QMessageBox msgBox;
@@ -3964,7 +3957,7 @@ void OBSBasic::on_selectShowButton_clicked() {
   } else {
     chewWindow->setModal(false);
     chewWindow->show();
-    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END));
+    chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_EDIT_SHOW_START + mChewShowId + CHEW_TV_EDIT_SHOW_END + CHEW_TV_EDIT_KEY_SUFFIX));
   }
 }
 
@@ -4498,7 +4491,3 @@ int OBSBasic::GetProfilePath(char *path, size_t size, const char *file) const
 }
 
 
-void OBSBasic::ChewShowChosen() {
-  ui->streamButton->setEnabled(false);
-  qDebug() << "Chew show chosen";
-}
