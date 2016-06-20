@@ -68,7 +68,7 @@
 #define CHEW_TV_LOGIN "https://staging.chew.tv/_broadcaster/"
 #define CHEW_TV_SELECT_SHOW "https://staging.chew.tv/_broadcaster/shows"
 #define CHEW_TV_EDIT_SHOW_START "https://staging.chew.tv/_broadcaster/shows/"
-#define CHEW_TV_EDIT_SHOW_END "/edit"
+#define CHEW_TV_EDIT_SHOW_END "/info"
 #define CHEW_TV_EDIT_KEY_SUFFIX "?platform=staging.chew.tv"
 
 #define SHOW_DEBUG_WINDOW chewWindow->navigateToUrl(QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/debug.html"));
@@ -78,7 +78,7 @@
 #define CHEW_TV_LOGIN "https://www.chew.tv/_broadcaster/"
 #define CHEW_TV_SELECT_SHOW "https://www.chew.tv/_broadcaster/shows"
 #define CHEW_TV_EDIT_SHOW_START "https://www.chew.tv/_broadcaster/shows/"
-#define CHEW_TV_EDIT_SHOW_END "/edit"
+#define CHEW_TV_EDIT_SHOW_END "/info"
 #define CHEW_TV_EDIT_KEY_SUFFIX ""
 
 #endif
