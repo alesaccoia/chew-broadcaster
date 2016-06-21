@@ -1239,13 +1239,13 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   chew_check_and_convert_variant_map(tempVar, paramsAsMap);
   chew_check_and_return_variant(paramsAsMap, nameVar, "name");
   
-  QString userName = nameVar.toString();
-  qInfo() << "Logged in as " << userName;
+  mChewUserName = nameVar.toString();
+  qInfo() << "Logged in as " << mChewUserName;
   
   mChewConnectionState = kChewLoggedIn;
   chewWindow->hide();
   this->show();
-  this->setWindowTitle("Chew Broadcaster | Logged in as " + userName);
+  this->setWindowTitle("Chew Broadcaster | Logged in as " + mChewUserName);
   setMenusEnabled(true);
 
   mChewConnectionState = kChewLoggedIn;
@@ -3895,6 +3895,8 @@ void OBSBasic::on_streamButton_clicked()
     
     ChewSetCurrentServerSettings("","");
 
+    this->setWindowTitle("Chew Broadcaster | Logged in as " + mChewUserName);
+
 	} else {
 		bool confirm = config_get_bool(GetGlobalConfig(), "BasicWindow",
 				"WarnBeforeStartingStream");
@@ -3945,7 +3947,7 @@ void OBSBasic::on_logoutButton_clicked() {
   
   mChewConnectionState = kChewLoggedOut;
   
-  deleteAndRecreateChewView(true);
+  deleteAndRecreateChewView();
   this->hide();
   chewWindow->show();
   chewWindow->setModal(true);
@@ -3965,16 +3967,15 @@ void OBSBasic::setMenusEnabled(bool enable_) {
   this->ui->sceneCollectionMenu->setEnabled(enable_);
 }
 
-void OBSBasic::deleteAndRecreateChewView(bool modality_) {
+void OBSBasic::deleteAndRecreateChewView() {
   delete chewWindow;
   chewWindow = new ChewWebDialog();
-  //chewWindow->setModal(modality_);
   QObject::connect(chewWindow, &ChewWebDialog::wantsToClose, this, &OBSBasic::ChewDialogWantsToClose);
   chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
 
 void OBSBasic::on_selectShowButton_clicked() {
-  deleteAndRecreateChewView(true);
+  deleteAndRecreateChewView();
   
   if (!outputHandler->StreamingActive()) {
     //chewWindow->setModal(true);

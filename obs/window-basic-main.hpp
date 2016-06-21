@@ -105,6 +105,7 @@ private:
   
   QString mChewShowId;
   QString mChewStopUrl;
+  QString mChewUserName;
 
 	std::vector<VolControl*> volumes;
 
@@ -321,7 +322,7 @@ private slots:
   void on_selectShowButton_clicked();
   void NetworkErrorOnStopStreaming(QNetworkReply::NetworkError code);
   
-  void deleteAndRecreateChewView(bool modality_);
+  void deleteAndRecreateChewView();
   
   void OnAppFocusChanged(QWidget* old, QWidget* now);
   void setMenusEnabled(bool enable_);
