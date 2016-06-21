@@ -3852,9 +3852,7 @@ void OBSBasic::on_streamButton_clicked()
     chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST);
     
     if (!sr.run()) {
-      QMessageBox msgBox;
-      msgBox.setText("Error notifying the Chew server for the show termination, Error ");
-      msgBox.exec();
+      OBSErrorBox(nullptr, "Error notifying the Chew server for the show termination");
     }
     
     
