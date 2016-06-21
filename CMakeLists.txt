@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(chew-broadcaster)
 
 SET(CHEW_VERSION_MAJOR "0" CACHE INTERNAL "VersionMajor")
-SET(CHEW_VERSION_MINOR “2” CACHE INTERNAL "VersionMinor")
+SET(CHEW_VERSION_MINOR "2" CACHE INTERNAL "VersionMinor")
 SET(CHEW_VERSION_PATCH "0" CACHE INTERNAL "VersionPatch")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
