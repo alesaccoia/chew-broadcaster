@@ -3765,7 +3765,7 @@ void OBSBasic::StreamingStop(int code)
 	ui->statusbar->StreamStopped();
 
 	ui->streamButton->setText(QTStr("Basic.Main.StartStreaming"));
-	ui->streamButton->setEnabled(true);
+	ui->streamButton->setEnabled(false);
 
 	if (!outputHandler->Active() && !ui->profileMenu->isEnabled()) {
 		ui->profileMenu->setEnabled(true);
@@ -3879,9 +3879,6 @@ void OBSBasic::on_streamButton_clicked()
     
     // re-enable the logout option
     ui->logoutButton->setEnabled(true);
-    
-    ui->streamButton->setEnabled(false);
-    
     ui->selectShowButton->setText("Select Show");
     
     
