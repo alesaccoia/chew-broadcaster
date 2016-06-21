@@ -1167,6 +1167,8 @@ bool OBSBasic::ChewDialogWantsToClose() {
   return true;
 }
 
+#pragma mark Chew window methods dispatcher
+
 void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params) {
   QVariantMap paramsMap = params.toMap();
   if (method == "authenticated") {
@@ -1177,6 +1179,8 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
     ChewShowUpdateHandler(params);
   } else if (method == "open") {
     ChewOpenLinkHandler(params);
+  } else if (method == "logout") {
+    ChewLogoutHandler(params);
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
@@ -1385,8 +1389,13 @@ void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
   QDesktopServices::openUrl(QUrl(url));
 }
 
-void OBSBasic::ChewLogoutHandler() {
-  
+void OBSBasic::ChewLogoutHandler(const QVariant &param) {
+  chewWindow->deleteCookies();
+  mChewConnectionState = kChewLoggedOut;
+  this->hide();
+  chewWindow->setModal(true);
+  setMenusEnabled(false);
+  chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
 }
 
 void OBSBasic::InitHotkeys()
