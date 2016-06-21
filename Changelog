@@ -1,3 +1,7 @@
+6/21/2016 <alessandro@alsc.co> 0.2.0
+Fix names of user directories (Application Support) for Mac.
+Window title set to username after Stop Streaming 
+
 6/21/2016 <alessandro@alsc.co>  Beta9
 Adds logout handler as from specs
 
