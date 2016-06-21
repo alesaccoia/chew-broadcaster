@@ -3620,8 +3620,8 @@ void OBSBasic::StartStreaming()
 
 	if (!outputHandler->StartStreaming(service)) {
 		ui->streamButton->setText(QTStr("Basic.Main.StartStreaming"));
-    ui->selectShowButton->setEnabled(false);
-    ui->logoutButton->setEnabled(false);
+    ui->selectShowButton->setEnabled(true);
+    ui->logoutButton->setEnabled(true);
 		ui->streamButton->setEnabled(true);
 	}
 }
