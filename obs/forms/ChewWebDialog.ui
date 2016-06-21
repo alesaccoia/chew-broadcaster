@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Chew Studio</string>
+   <string>Chew Broadcaster</string>
   </property>
   <property name="modal">
    <bool>false</bool>

@@ -1174,13 +1174,12 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
   } else if (method == "selectShow") {
     ChewShowSelectionHandler(params);
   } else if (method == "editShow") {
-    chewWindow->hide();
+    ChewShowUpdateHandler(params);
   } else if (method == "open") {
     ChewOpenLinkHandler(params);
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
-
 }
 
 void OBSBasic::ChewAssignProxyProperties() {
@@ -1225,6 +1224,8 @@ void OBSBasic::ChewAssignProxyProperties() {
   chewJsProxy->getProperties() = vrMap;
 }
 
+#pragma mark Chew handlers
+
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   QVariantMap paramsAsMap;
   QVariant tempVar, nameVar;
@@ -1248,7 +1249,7 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
 
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   QVariantMap paramsAsMap, streamMap, settingsMap, resolutionMap, bitrateMap;
-  QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var, id_var;
+  QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var, window_title_var, id_var;
   
   chew_check_and_convert_variant_map(params, paramsAsMap);
   
@@ -1262,6 +1263,9 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   
   // { stop_url
   chew_check_and_return_variant(paramsAsMap, stop_url_var, "stop_url");
+  
+  // { window_title
+  chew_check_and_return_variant(paramsAsMap, window_title_var, "window_title");
   
   // { settings: { resolution: { x, y }, bitrate: { video:, audio:}  } }
   chew_check_and_return_variant(paramsAsMap, tempVar, "settings");
@@ -1297,16 +1301,29 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   mChewShowId = id_var.toString();
   mChewStopUrl = stop_url_var.toString();
   
-  QString show_title = show_name_var.toString();
-  
-  
-  this->setWindowTitle("Chew Broadcaster | " + show_title);
+  this->setWindowTitle(window_title_var.toString());
   this->ui->streamButton->setEnabled(true);
   
   // close the webview
   chewWindow->hide();
   
   mChewConnectionState = kChewShowSelected;
+}
+
+void OBSBasic::ChewShowUpdateHandler(const QVariant &params) {
+  QVariantMap paramsAsMap;
+  QVariant window_title_var;
+  
+  chew_check_and_convert_variant_map(params, paramsAsMap);
+  
+  // { window_title
+  chew_check_and_return_variant(paramsAsMap, window_title_var, "window_title");
+  
+  this->setWindowTitle(window_title_var.toString());
+  
+  // close the webview
+  chewWindow->hide();
+
 }
 
 void OBSBasic::ChewSetCurrentServerSettings(const QString& server, const QString& key) {
@@ -3831,6 +3848,8 @@ void OBSBasic::RecordingStop(int code)
 	}
 }
 
+#pragma mark Stream Button handler
+
 void OBSBasic::on_streamButton_clicked()
 {
 	if (outputHandler->StreamingActive()) {
@@ -3849,7 +3868,7 @@ void OBSBasic::on_streamButton_clicked()
     
     
     // synchronous call
-    chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST);
+    chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST, 5000);
     
     if (!sr.run()) {
       OBSErrorBox(nullptr, "Error notifying the Chew server for the show termination");
@@ -3861,10 +3880,14 @@ void OBSBasic::on_streamButton_clicked()
     // re-enable the logout option
     ui->logoutButton->setEnabled(true);
     
+    ui->streamButton->setEnabled(false);
+    
     ui->selectShowButton->setText("Select Show");
     
     
     StopStreaming();
+    
+    ChewSetCurrentServerSettings("","");
 
 	} else {
 		bool confirm = config_get_bool(GetGlobalConfig(), "BasicWindow",

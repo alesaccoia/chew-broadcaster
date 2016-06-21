@@ -308,6 +308,7 @@ private:
   
   void ChewAuthenticationHandler(const QVariant &params);
   void ChewShowSelectionHandler(const QVariant &params);
+  void ChewShowUpdateHandler(const QVariant &params);
   void ChewOpenLinkHandler(const QVariant &params);
   void ChewLogoutHandler();
   bool ChewDialogWantsToClose();
