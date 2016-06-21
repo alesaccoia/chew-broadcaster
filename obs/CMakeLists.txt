@@ -236,7 +236,11 @@ if(WIN32)
 
 	set_target_properties(obs
 		PROPERTIES
-			OUTPUT_NAME "obs${_output_suffix}")
+			OUTPUT_NAME "chew${_output_suffix}")
+else()
+  set_target_properties(obs
+		PROPERTIES
+			OUTPUT_NAME "chew")
 endif()
 
 target_link_libraries(obs
