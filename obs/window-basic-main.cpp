@@ -3879,10 +3879,9 @@ void OBSBasic::on_streamButton_clicked()
     // synchronous call
     chew::SynchronousRequestWithTimeout sr(QUrl(mChewStopUrl), chew::SynchronousRequestWithTimeout::POST, 5000);
     
-    if (!sr.run()) {
-      OBSErrorBox(nullptr, "Error notifying the Chew server for the show termination");
+    if (!req.run()) {
+      qDebug() << "Problem sending the stop_url to the server while shutting down";
     }
-    
     
     chewWindow->hide();
     
