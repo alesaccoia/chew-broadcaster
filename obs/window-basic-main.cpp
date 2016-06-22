@@ -1170,7 +1170,6 @@ bool OBSBasic::ChewDialogWantsToClose() {
 #pragma mark Chew window methods dispatcher
 
 void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params) {
-  QVariantMap paramsMap = params.toMap();
   if (method == "authenticated") {
     ChewAuthenticationHandler(params);
   } else if (method == "selectShow") {
