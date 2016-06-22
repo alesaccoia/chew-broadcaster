@@ -5,6 +5,3 @@
 [submodule "plugins/mac-syphon/syphon-framework"]
 	path = plugins/mac-syphon/syphon-framework
 	url = https://github.com/palana/Syphon-Framework.git
-[submodule "install-utils"]
-	path = install-utils
-	url = git@github.com:alesaccoia/chew-broadcaster-utils.git
