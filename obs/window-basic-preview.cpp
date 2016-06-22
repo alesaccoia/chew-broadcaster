@@ -1050,9 +1050,9 @@ bool OBSBasicPreview::DrawSelectedItem(obs_scene_t *scene,
 
 #define DRAW_SIDE(side, vb) \
 		if (crop.side > 0) \
-			vec4_set(&color, 0.0f, 1.0f, 0.0f, 1.0f); \
+			vec4_set(&color, 0.98f, 0.356f, 0.121f, 1.0f); \
 		else \
-			vec4_set(&color, 1.0f, 0.0f, 0.0f, 1.0f); \
+			vec4_set(&color, 0.98f, 0.356f, 0.121f, 1.0f); \
 		gs_effect_set_vec4(param, &color); \
 		gs_load_vertexbuffer(main->vb); \
 		gs_draw(GS_LINESTRIP, 0, 0);

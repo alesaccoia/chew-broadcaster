@@ -11,7 +11,7 @@
 
 ; Main Install settings
 Name "${APPNAMEANDVERSION}"
-InstallDir "$PROGRAMFILES32\obs-studio"
+InstallDir "$PROGRAMFILES32\chew-broadcaster"
 InstallDirRegKey HKLM "Software\${APPNAME}" ""
 OutFile "Chew-Broadcaster-${APPVERSION}-Installer.exe"
 
