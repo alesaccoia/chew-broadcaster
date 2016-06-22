@@ -1,0 +1,5 @@
+obs-studio (${version}-${jenkins_build}~${distro}) ${distro}; urgency=low
+
+${changelog}
+
+ -- John Bradley <jrb@turrettech.com>  ${date}
