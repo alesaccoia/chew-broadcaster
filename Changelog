@@ -1,3 +1,9 @@
+6/23/2016 <alessandro@alsc.co> 0.2.4
+Set styles
+Fix stop_url
+Fix window_title
+Implementation of the protocol refactor for bitrates 
+
 6/21/2016 <alessandro@alsc.co> 0.2.0
 Fix names of user directories (Application Support) for Mac.
 Window title set to username after Stop Streaming 
