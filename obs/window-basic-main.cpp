@@ -1058,7 +1058,6 @@ void OBSBasic::OBSInit()
 		disableSaving++;
 	}
 
-	TimedCheckForUpdates();
 	loaded = true;
 
 	previewEnabled = config_get_bool(App()->GlobalConfig(),

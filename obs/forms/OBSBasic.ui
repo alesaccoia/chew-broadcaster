@@ -860,7 +860,6 @@
     <addaction name="actionWebsite"/>
     <addaction name="separator"/>
     <addaction name="menuLogFiles"/>
-    <addaction name="actionCheckForUpdates"/>
    </widget>
    <widget class="QMenu" name="menuBasic_MainMenu_Edit">
     <property name="title">
@@ -1203,11 +1202,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+End</string>
-   </property>
-  </action>
-  <action name="actionCheckForUpdates">
-   <property name="text">
-    <string>Basic.MainMenu.Help.CheckForUpdates</string>
    </property>
   </action>
   <action name="actionInteract">
