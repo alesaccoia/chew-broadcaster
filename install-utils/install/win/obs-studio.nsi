@@ -1,7 +1,7 @@
 ; Script generated with the Venis Install Wizard
 
 ; Define your application name
-!define APPVERSION "0.2.2"
+!define APPVERSION "1.0.0"
 !define APPNAME "Chew Broadcaster"
 !define APPNAMEANDVERSION "Chew Broadcaster ${APPVERSION}"
 

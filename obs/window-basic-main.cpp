@@ -1332,7 +1332,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
 	bool advOut = astrcmpi(mode, "Advanced") == 0;
   
   if (advOut && force_simple_mode) {
-    config_set_default_string(basicConfig, "Output", "Mode", "Simple");
+    config_set_string(basicConfig, "Output", "Mode", "Simple");
     advOut = false;
   }
   
