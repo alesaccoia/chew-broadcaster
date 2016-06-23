@@ -22,8 +22,11 @@ ChewWebDialog::ChewWebDialog(QWidget *parent)
   
   mWebView->setPage(mWebPage);
   
-  redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirectorSam.html";
-  
+  #ifdef __APPLE__
+  redirectorPagePath = "file://" + QCoreApplication::applicationDirPath() + "/../data/obs-studio/chew/redirector.html";
+  #else
+  redirectorPagePath = "file:///" + QCoreApplication::applicationDirPath() + "/../../data/obs-studio/chew/redirector.html";
+  #endif
   //this->setModal(true);
 
   setupShortcuts();
