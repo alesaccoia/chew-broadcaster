@@ -4497,22 +4497,22 @@ void OBSBasic::OpenSceneProjector()
 
 void OBSBasic::UpdateTitleBar()
 {
-	stringstream name;
-
-	const char *profile = config_get_string(App()->GlobalConfig(),
-			"Basic", "Profile");
-	const char *sceneCollection = config_get_string(App()->GlobalConfig(),
-			"Basic", "SceneCollection");
-
-	name << "OBS ";
-	if (previewProgramMode)
-		name << "Studio ";
-
-	name << App()->GetVersionString();
-	name << " - " << Str("TitleBar.Profile") << ": " << profile;
-	name << " - " << Str("TitleBar.Scenes") << ": " << sceneCollection;
-
-	setWindowTitle(QT_UTF8(name.str().c_str()));
+//	stringstream name;
+//
+//	const char *profile = config_get_string(App()->GlobalConfig(),
+//			"Basic", "Profile");
+//	const char *sceneCollection = config_get_string(App()->GlobalConfig(),
+//			"Basic", "SceneCollection");
+//
+//	name << "OBS ";
+//	if (previewProgramMode)
+//		name << "Studio ";
+//
+//	name << App()->GetVersionString();
+//	name << " - " << Str("TitleBar.Profile") << ": " << profile;
+//	name << " - " << Str("TitleBar.Scenes") << ": " << sceneCollection;
+//
+//	setWindowTitle(QT_UTF8(name.str().c_str()));
 }
 
 int OBSBasic::GetProfilePath(char *path, size_t size, const char *file) const
