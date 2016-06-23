@@ -1181,7 +1181,7 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
   } else if (method == "open") {
     ChewOpenLinkHandler(params);
   } else if (method == "logout") {
-    ChewLogoutHandler(params);
+    ChewLogoutHandler();
   } else if (method == "resize") {
     ChewResizeHandler(params);
   } else {
@@ -1432,7 +1432,7 @@ void OBSBasic::ChewOpenLinkHandler(const QVariant &params) {
   QDesktopServices::openUrl(QUrl(url));
 }
 
-void OBSBasic::ChewLogoutHandler(const QVariant &param) {
+void OBSBasic::ChewLogoutHandler() {
   chewWindow->deleteCookies();
   mChewConnectionState = kChewLoggedOut;
   this->hide();
@@ -2171,7 +2171,7 @@ void OBSBasic::CheckForUpdates()
 #ifdef UPDATE_SPARKLE
 	trigger_sparkle_update();
 #else
-	ui->actionCheckForUpdates->setEnabled(false);
+	//ui->actionCheckForUpdates->setEnabled(false);
 
 	if (updateCheckThread) {
 		updateCheckThread->wait();
@@ -2197,7 +2197,7 @@ void OBSBasic::CheckForUpdates()
 
 void OBSBasic::updateFileFinished(const QString &text, const QString &error)
 {
-	ui->actionCheckForUpdates->setEnabled(true);
+	//ui->actionCheckForUpdates->setEnabled(true);
 
 	if (text.isEmpty()) {
 		blog(LOG_WARNING, "Update check failed: %s", QT_TO_UTF8(error));

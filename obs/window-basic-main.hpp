@@ -312,7 +312,7 @@ private:
   void ChewShowSelectionHandler(const QVariant &params);
   void ChewShowUpdateHandler(const QVariant &params);
   void ChewOpenLinkHandler(const QVariant &params);
-  void ChewLogoutHandler(const QVariant &param);
+  void ChewLogoutHandler();
   bool ChewDialogWantsToClose();
   
   void ChewSetCurrentServerSettings(const QString& server, const QString& key);
