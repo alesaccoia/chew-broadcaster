@@ -1192,6 +1192,7 @@ void OBSBasic::ChewAssignProxyProperties() {
   vrMap.insert("versionPatch", CHEW_VERSION_PATCH);
   
   QVariantMap settingsMap;
+  uint32_t temp;
   
   QVariantMap resolutionMap;
   resolutionMap.insert("baseCX", (uint32_t)config_get_uint(basicConfig, "Video", "baseCX"));
@@ -1201,23 +1202,19 @@ void OBSBasic::ChewAssignProxyProperties() {
   settingsMap.insert("resolution", resolutionMap);
   
   const char *mode = config_get_string(basicConfig, "Output", "Mode");
+  settingsMap.insert("outputMode", mode);
+  
 	bool advOut = astrcmpi(mode, "Advanced") == 0;
   
-  QVariantMap bitrateMap;
-  uint32_t temp;
-  if (advOut)
-    temp = (uint32_t)config_get_uint(basicConfig, "AdvOut", "FFVBitrate");
-  else
+  // just sending the bitrate map if we are in simple mode
+  if (!advOut) {
+    QVariantMap bitrateMap;
     temp = (uint32_t)config_get_uint(basicConfig, "SimpleOutput", "VBitrate");
-  bitrateMap.insert("video", temp);
-  
-  if (advOut)
-    temp = (uint32_t)config_get_uint(basicConfig, "AdvOut", "FFABitrate");
-  else
+    bitrateMap.insert("video", temp);
     temp = (uint32_t)config_get_uint(basicConfig, "SimpleOutput", "ABitrate");
-  bitrateMap.insert("audio", temp);
-  
-  settingsMap.insert("bitrate", bitrateMap);
+    bitrateMap.insert("audio", temp);
+    settingsMap.insert("bitrate", bitrateMap);
+  }
   
   temp = (uint32_t)config_get_uint(basicConfig, "Video", "FPSCommon");
   settingsMap.insert("fps", temp);
@@ -1250,6 +1247,13 @@ void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   mChewConnectionState = kChewLoggedIn;
 }
 
+/*
+   Logic: if the user is in Simple Mode in the Output pane, the parameters
+   are set directly.
+   If the user is in advanced mode, the
+
+*/
+
 void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   QVariantMap paramsAsMap, streamMap, settingsMap, resolutionMap, bitrateMap;
   QVariant tempVar, stream_url_var, stream_key_var, show_name_var, stop_url_var, window_title_var, id_var;
@@ -1270,14 +1274,11 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   // { window_title
   chew_check_and_return_variant(paramsAsMap, window_title_var, "window_title");
   
-  // { settings: { resolution: { x, y }, bitrate: { video:, audio:}  } }
+  // { settings: { force_simple_mode: [0,1], resolution: { x, y }, bitrate: { video:, audio:}  } }
   chew_check_and_return_variant(paramsAsMap, tempVar, "settings");
   chew_check_and_convert_variant_map(tempVar, settingsMap);
   chew_check_and_return_variant(settingsMap, tempVar, "resolution");
   chew_check_and_convert_variant_map(tempVar, resolutionMap);
-  
-  chew_check_and_return_variant(settingsMap, tempVar, "bitrate");
-  chew_check_and_convert_variant_map(tempVar, bitrateMap);
   
   QVariant baseCX, baseCY, outputCX, outputCY;
   chew_check_and_return_variant(resolutionMap, baseCX, "baseCX");
@@ -1285,12 +1286,16 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   chew_check_and_return_variant(resolutionMap, outputCX, "outputCX");
   chew_check_and_return_variant(resolutionMap, outputCY, "outputCY");
   
-  QVariant videoBitrate, audioBitrate;
-  chew_check_and_return_variant(bitrateMap, videoBitrate, "video");
-  chew_check_and_return_variant(bitrateMap, audioBitrate, "audio");
-  
   QVariant fps;
   chew_check_and_return_variant(settingsMap, fps, "fps");
+  
+  #if 0
+  QVariant force_simple_mode_var;
+  chew_check_and_return_variant(settingsMap, force_simple_mode_var, "force_simple_mode");
+  int force_simple_mode = force_simple_mode_var.toUInt();
+  #else
+  int force_simple_mode = 1;
+  #endif
   
   QString stream_url = stream_url_var.toString();
   QString stream_key = stream_key_var.toString() + CHEW_TV_EDIT_KEY_SUFFIX;
@@ -1298,8 +1303,26 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   ChewSetCurrentServerSettings(stream_url, stream_key);
   
   ChewSetVideoSettings(baseCX.toUInt(), baseCY.toUInt(), outputCX.toUInt(), outputCY.toUInt(), fps.toFloat());
+
+  const char *mode = config_get_string(basicConfig, "Output", "Mode");
+	bool advOut = astrcmpi(mode, "Advanced") == 0;
   
-  ChewSetBitrates(audioBitrate.toUInt(), videoBitrate.toUInt());
+  if (advOut && force_simple_mode) {
+    config_set_default_string(basicConfig, "Output", "Mode", "Simple");
+    advOut = false;
+  }
+  
+  // just if we are in simple
+  if (!advOut) {
+    QVariant videoBitrate, audioBitrate;
+  
+    chew_check_and_return_variant(settingsMap, tempVar, "bitrate");
+    chew_check_and_convert_variant_map(tempVar, bitrateMap);
+    
+    chew_check_and_return_variant(bitrateMap, videoBitrate, "video");
+    chew_check_and_return_variant(bitrateMap, audioBitrate, "audio");
+    ChewSetBitrates(audioBitrate.toUInt(), videoBitrate.toUInt());
+  }
   
   mChewShowId = id_var.toString();
   mChewStopUrl = stop_url_var.toString();
@@ -1358,14 +1381,11 @@ void OBSBasic::ChewSetVideoSettings(uint baseCX, uint baseCY, uint outputCX, uin
 void OBSBasic::ChewSetBitrates(uint aBitrate, uint vBitrate) {
   const char *mode = config_get_string(basicConfig, "Output", "Mode");
 	bool advOut = astrcmpi(mode, "Advanced") == 0;
+  assert(!advOut);
   
-  if (advOut) {
-    config_set_uint(basicConfig, "AdvOut", "FFVBitrate", vBitrate);
-    config_set_uint(basicConfig, "AdvOut", "FFABitrate", aBitrate);
-  } else {
-    config_set_uint(basicConfig, "SimpleOutput", "VBitrate", vBitrate);
-    config_set_uint(basicConfig, "SimpleOutput", "ABitrate", aBitrate);
-  }
+  config_set_uint(basicConfig, "SimpleOutput", "VBitrate", vBitrate);
+  config_set_uint(basicConfig, "SimpleOutput", "ABitrate", aBitrate);
+  
   obs_data_t *videoSettings = obs_data_create();
   obs_data_t *audioSettings = obs_data_create();
   obs_data_set_int(videoSettings, "bitrate", vBitrate);
@@ -3972,7 +3992,10 @@ void OBSBasic::deleteAndRecreateChewView() {
   chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
 }
 
+#pragma mark Select show button handler
+
 void OBSBasic::on_selectShowButton_clicked() {
+  ChewAssignProxyProperties();
   deleteAndRecreateChewView();
   
   if (!outputHandler->StreamingActive()) {
