@@ -389,7 +389,9 @@ QPushButton:checked {
 /* Sliders */
 
 QSlider::groove:horizontal {
-    background-color: rgb(250,91,31);
+    background-color: QLinearGradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        stop: 0 rgb(31,30,31), /* veryDark */
+        stop: 0.75 rgb(50, 49, 50));
     height: 4px;
     border: none;
     border-radius: 2px;
@@ -461,7 +463,7 @@ QSlider::handle:hover {
 }
 
 QSlider::sub-page {
-    background-color: rgb(42,130,218); /* blue */
+    background-color: rgb(250,91,31); /* blue */
     border-radius: 2px;
 }
 

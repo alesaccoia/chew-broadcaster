@@ -307,6 +307,7 @@ private:
   // creates the chewApp.properties JS object exposed to the WebView
   void ChewAssignProxyProperties();
   
+  void ChewResizeHandler(const QVariant &params);
   void ChewAuthenticationHandler(const QVariant &params);
   void ChewShowSelectionHandler(const QVariant &params);
   void ChewShowUpdateHandler(const QVariant &params);

@@ -61,6 +61,9 @@
 #include <QScreen>
 #include <QWindow>
 
+#include <QStyle>
+#include <QDesktopWidget>
+
 #define CHEW_STAGING 1
 
 #ifdef CHEW_STAGING
@@ -1180,6 +1183,8 @@ void OBSBasic::ChewWebViewHandler(const QString &method, const QVariant &params)
     ChewOpenLinkHandler(params);
   } else if (method == "logout") {
     ChewLogoutHandler(params);
+  } else if (method == "resize") {
+    ChewResizeHandler(params);
   } else {
     qDebug() << "Unhandled method " << method << " from Chew Webview not understood";
   }
@@ -1225,6 +1230,26 @@ void OBSBasic::ChewAssignProxyProperties() {
 }
 
 #pragma mark Chew handlers
+
+void OBSBasic::ChewResizeHandler(const QVariant &params) {
+  QVariantMap paramsAsMap;
+  QVariant tempVar;
+  int width, height;
+  chew_check_and_convert_variant_map(params, paramsAsMap);
+  chew_check_and_return_variant(paramsAsMap, tempVar, "width");
+  width = tempVar.toUInt();
+  chew_check_and_return_variant(paramsAsMap, tempVar, "height");
+  height = tempVar.toUInt();
+  chewWindow->setFixedSize(width, height);
+  chewWindow->setGeometry(
+    QStyle::alignedRect(
+        Qt::LeftToRight,
+        Qt::AlignCenter,
+        chewWindow->size(),
+        qApp->desktop()->availableGeometry()
+    )
+  );
+}
 
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
   QVariantMap paramsAsMap;
@@ -1289,7 +1314,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   QVariant fps;
   chew_check_and_return_variant(settingsMap, fps, "fps");
   
-  #if 0
+  #if 1
   QVariant force_simple_mode_var;
   chew_check_and_return_variant(settingsMap, force_simple_mode_var, "force_simple_mode");
   int force_simple_mode = force_simple_mode_var.toUInt();
