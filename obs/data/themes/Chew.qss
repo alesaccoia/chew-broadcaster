@@ -75,12 +75,12 @@ QListWidget {
 
 QListWidget::item:selected:!active {
     color: rgb(255, 255, 255);
-    background-color: rgb(48,47,48);
+    background-color: rgb(37,48,54);
 }
 
 QListWidget::item:selected:active {
     color: rgb(255, 255, 255);
-    background-color: rgb(37,48,54);
+    background-color: rgb(250,91,31);
 }
 
 
