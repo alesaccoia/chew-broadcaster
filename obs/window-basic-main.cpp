@@ -64,8 +64,6 @@
 #include <QStyle>
 #include <QDesktopWidget>
 
-#define CHEW_STAGING 1
-
 #ifdef CHEW_STAGING
 
 #define CHEW_TV_LOGIN "https://staging.chew.tv/_broadcaster/"
