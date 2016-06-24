@@ -466,7 +466,7 @@ private slots:
 	void on_actionUploadCurrentLog_triggered();
 	void on_actionUploadLastLog_triggered();
 	void on_actionViewCurrentLog_triggered();
-	void on_actionCheckForUpdates_triggered();
+	void on_actionGetHelp_triggered();
 
 	void on_actionEditTransform_triggered();
 	void on_actionResetTransform_triggered();

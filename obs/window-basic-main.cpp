@@ -2892,6 +2892,11 @@ void OBSBasic::on_actionShow_Recordings_triggered()
 	QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
 
+void OBSBasic::on_actionGetHelp_triggered()
+{
+	QDesktopServices::openUrl(QUrl("https://chew.tv/guide/broadcaster"));
+}
+
 void OBSBasic::on_actionRemux_triggered()
 {
 	const char *mode = config_get_string(basicConfig, "Output", "Mode");
@@ -3563,11 +3568,6 @@ void OBSBasic::on_actionViewCurrentLog_triggered()
 
 	QUrl url = QUrl::fromLocalFile(QT_UTF8(path.c_str()));
 	QDesktopServices::openUrl(url);
-}
-
-void OBSBasic::on_actionCheckForUpdates_triggered()
-{
-	CheckForUpdates();
 }
 
 void OBSBasic::logUploadFinished(const QString &text, const QString &error)

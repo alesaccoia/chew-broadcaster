@@ -860,6 +860,7 @@
     <addaction name="actionWebsite"/>
     <addaction name="separator"/>
     <addaction name="menuLogFiles"/>
+    <addaction name="actionGetHelp"/>
    </widget>
    <widget class="QMenu" name="menuBasic_MainMenu_Edit">
     <property name="title">
@@ -1202,6 +1203,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+End</string>
+   </property>
+  </action>
+  <action name="actionGetHelp">
+   <property name="text">
+    <string>Get Help</string>
    </property>
   </action>
   <action name="actionInteract">
