@@ -7,12 +7,13 @@
 # copies the necessary files for the functioning of the QT web engine framework into
 # the bin directory, then calls the build_app python scrpt that 
 
+CMAKE_PREFIX_PATH=/usr/local/opt/qt5/ cmake ../
 make -j 8
 
 rm -rf "Chew Broadcaster.app"
 rm -rf tmp
 
-python ../../obs-studio-utils/install/osx/build_app.py
+python ../install-utils/install/osx/build_app.py
 
 cd "Chew Broadcaster.app/Contents/Resources/bin/"
 
