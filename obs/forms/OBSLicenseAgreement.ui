@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>457</width>
-    <height>430</height>
+    <height>480</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -24,6 +24,26 @@
     <widget class="QLabel" name="agreement">
      <property name="text">
       <string>LicenseAgreement.PleaseReview</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="originalCopyright">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chew Broadcaster is based on &lt;a href=&quot;https://obsproject.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#fa5b1f;&quot;&gt;OBS Studio&lt;/span&gt;&lt;/a&gt;, Copyright (C) Hugh Bailey&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+      </string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
