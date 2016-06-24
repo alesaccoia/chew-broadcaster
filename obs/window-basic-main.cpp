@@ -1133,7 +1133,7 @@ void OBSBasic::OBSInit()
 	if (!top || !bottom) {
 		defSizes = ui->mainSplitter->sizes();
 		int total = defSizes[0] + defSizes[1];
-		defSizes[0] = total * 75 / 100;
+		defSizes[0] = total * 50.F / 100.F;
 		defSizes[1] = total - defSizes[0];
 	} else {
 		defSizes.push_back(top);
