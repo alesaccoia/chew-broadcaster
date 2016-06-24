@@ -1132,7 +1132,7 @@ void OBSBasic::OBSInit()
 
 	if (!top || !bottom) {
 		defSizes = ui->mainSplitter->sizes();
-		int total = ui->mainSplitter->parentWidget()->height();
+		int total = this->height();
 		defSizes[0] = total * 50.F / 100.F;
 		defSizes[1] = total - defSizes[0];
 	} else {
