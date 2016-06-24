@@ -1119,7 +1119,7 @@ void OBSBasic::OBSInit()
   QObject::connect(chewJsProxy, &ChewHTMLProxy::executeJs, this, &OBSBasic::ChewWebViewHandler);
   chewWindow->getWebChannel()->registerObject(QStringLiteral("app"), chewJsProxy);
   
-  chewWindow->setWindowTitle("Chew.tv");
+  chewWindow->setWindowTitle("Chew Broadcaster");
   chewWindow->navigateToUrlWithRedirect(QUrl(CHEW_TV_LOGIN));
   chewWindow->show();
   
@@ -1146,6 +1146,7 @@ void OBSBasic::OBSInit()
 void OBSBasic::OnAppFocusChanged(QWidget* old, QWidget* now) {
   if (NULL == old) {
     chewWindow->update();
+    this->update();
   } else if(NULL == now) {
     ;
   } else {
@@ -1312,15 +1313,7 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   
   QVariant fps;
   chew_check_and_return_variant(settingsMap, fps, "fps");
-  
-  #if 1
-  QVariant force_simple_mode_var;
-  chew_check_and_return_variant(settingsMap, force_simple_mode_var, "force_simple_mode");
-  int force_simple_mode = force_simple_mode_var.toUInt();
-  #else
-  int force_simple_mode = 1;
-  #endif
-  
+
   QString stream_url = stream_url_var.toString();
   QString stream_key = stream_key_var.toString() + CHEW_TV_EDIT_KEY_SUFFIX;
   
@@ -1331,9 +1324,14 @@ void OBSBasic::ChewShowSelectionHandler(const QVariant &params) {
   const char *mode = config_get_string(basicConfig, "Output", "Mode");
 	bool advOut = astrcmpi(mode, "Advanced") == 0;
   
-  if (advOut && force_simple_mode) {
-    config_set_string(basicConfig, "Output", "Mode", "Simple");
-    advOut = false;
+  if (advOut) {
+    QVariant force_simple_mode_var;
+    chew_check_and_return_variant(settingsMap, force_simple_mode_var, "force_simple_mode");
+    int force_simple_mode = force_simple_mode_var.toUInt();
+    if (force_simple_mode) {
+      config_set_string(basicConfig, "Output", "Mode", "Simple");
+      advOut = false;
+    }
   }
   
   // just if we are in simple
