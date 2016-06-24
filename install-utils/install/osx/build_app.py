@@ -175,7 +175,7 @@ if args.sparkle is not None:
 prefix = "tmp/Contents/Resources/"
 sparkle_path = '@loader_path/{0}/Frameworks/Sparkle.framework/Versions/A/Sparkle'
 
-cmd('{0}install_name_tool -change {1} {2} {3}/bin/obs'.format(
+cmd('{0}install_name_tool -change {1} {2} {3}/bin/chew'.format(
     args.prefix, actual_sparkle_path, sparkle_path.format('../..'), prefix))
 
 
