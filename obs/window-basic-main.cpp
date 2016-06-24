@@ -64,6 +64,8 @@
 #include <QStyle>
 #include <QDesktopWidget>
 
+#define CHEW_STAGING 1
+
 #ifdef CHEW_STAGING
 
 #define CHEW_TV_LOGIN "https://staging.chew.tv/_broadcaster/"
@@ -746,8 +748,8 @@ bool OBSBasic::InitBasicConfigDefaults()
 		return false;
 	}
 
-	uint32_t cx = monitors[0].cx;
-	uint32_t cy = monitors[0].cy;
+	uint32_t cx = 1280;
+	uint32_t cy = 720;
 
 	/* ----------------------------------------------------- */
 	/* move over mixer values in advanced if older config */
@@ -774,7 +776,7 @@ bool OBSBasic::InitBasicConfigDefaults()
 			2500);
 	config_set_default_string(basicConfig, "SimpleOutput", "StreamEncoder",
 			SIMPLE_ENCODER_X264);
-	config_set_default_uint  (basicConfig, "SimpleOutput", "ABitrate", 160);
+	config_set_default_uint  (basicConfig, "SimpleOutput", "ABitrate", 320);
 	config_set_default_bool  (basicConfig, "SimpleOutput", "UseAdvanced",
 			false);
 	config_set_default_bool  (basicConfig, "SimpleOutput", "EnforceBitrate",
