@@ -1127,12 +1127,11 @@ void OBSBasic::OBSInit()
 			"splitterTop");
 	int bottom = config_get_int(App()->GlobalConfig(), "BasicWindow",
 			"splitterBottom");
-
 	if (!top || !bottom) {
-		defSizes = ui->mainSplitter->sizes();
-		int total = this->height();
-		defSizes[0] = total * 50.F / 100.F;
-		defSizes[1] = total - defSizes[0];
+    // any additional/missing space is distributed amongst the widgets
+    // according to the relative weight of the sizes.
+		defSizes.push_back(200);
+		defSizes.push_back(100);
 	} else {
 		defSizes.push_back(top);
 		defSizes.push_back(bottom);
