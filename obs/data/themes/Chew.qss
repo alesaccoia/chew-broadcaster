@@ -40,13 +40,18 @@ QWidget {
     background-color: rgb(51,64,71); /* dark */
     alternate-background-color: rgb(22,34,38); /* veryDark */
     color: rgb(225,224,225); /* veryLight */
-    selection-background-color: rgb(42,130,218); /* blue */
+    selection-background-color: rgb(250,91,31); /* orange */
     selection-color: black;
 }
 
 * [frameShape="1"], * [frameShape="2"], * [frameShape="3"], * [frameShape="4"], * [frameShape="5"], * [frameShape="6"] {
     border: 1px solid rgb(22,34,38);
 }
+
+QSplitter {
+  background-color: rgb(230,235,237);
+}
+
 
 
 /* Misc */
