@@ -87,6 +87,20 @@ void ChewWebDialog::reject() {
   if (shouldClose) QDialog::reject();
 }
 
+void ChewWebDialog::resize(int width_, int height_) {
+  this->setFixedSize(width_, height_);
+  this->setGeometry(
+    QStyle::alignedRect(
+        Qt::LeftToRight,
+        Qt::AlignCenter,
+        this->size(),
+        qApp->desktop()->availableGeometry()
+    )
+  );
+  mWebView->resize(this->size());
+  mWebView->update();
+}
+
 ///----------------------- FocusWidget -----------------------------///
 
 

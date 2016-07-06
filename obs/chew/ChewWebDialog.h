@@ -36,6 +36,10 @@ public:
   
   /// Clears the content of the webview setting it to nothing
   void clearContent();
+  
+  
+  /// Resizes the window
+  void resize(int width_, int height_);
 
   /**
    * Returns the WebChannel associated with this Dialog. Used to associate

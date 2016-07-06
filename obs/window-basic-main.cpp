@@ -1237,15 +1237,8 @@ void OBSBasic::ChewResizeHandler(const QVariant &params) {
   width = tempVar.toUInt();
   chew_check_and_return_variant(paramsAsMap, tempVar, "height");
   height = tempVar.toUInt();
-  chewWindow->setFixedSize(width, height);
-  chewWindow->setGeometry(
-    QStyle::alignedRect(
-        Qt::LeftToRight,
-        Qt::AlignCenter,
-        chewWindow->size(),
-        qApp->desktop()->availableGeometry()
-    )
-  );
+
+  chewWindow->resize(width, height);
 }
 
 void OBSBasic::ChewAuthenticationHandler(const QVariant &params) {
